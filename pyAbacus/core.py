@@ -352,11 +352,19 @@ def getAllSettings(abacus_port):
         get(abacus_port, first, last, 5)
         first = ADDRESS_DIRECTORY_8CH["config_custom_c1"]
         get(abacus_port, first, first, 5)
-
     elif tp is Settings8Ch:
         first = ADDRESS_DIRECTORY_8CH["delay_A"]
+        last = ADDRESS_DIRECTORY_8CH["delay_H"]
+        get(abacus_port, first, last, 5)
+        first = ADDRESS_DIRECTORY_8CH["sleep_A"]
+        last = ADDRESS_DIRECTORY_8CH["sleep_H"]
+        get(abacus_port, first, last, 5)
+        first = ADDRESS_DIRECTORY_8CH["sampling"]
         last = ADDRESS_DIRECTORY_8CH["coincidence_window"]
-        get(abacus_port, first, last)
+        get(abacus_port, first, last, 5)
+        first = ADDRESS_DIRECTORY_8CH["config_custom_c1"]
+        last = ADDRESS_DIRECTORY_8CH["config_custom_c8"]
+        get(abacus_port, first, last, 5)
 
     return SETTINGS[abacus_port]
 
@@ -1029,8 +1037,8 @@ class Settings48Ch(SettingsBase):
         else:
             value = self.fromBitsToValue(bits)
             if timer == "sampling":
-                return int(value * 1000) #improved in v1.1.1 to return int
-            return int(value * int(1e9)) #improved in v1.1.1 to return int
+                return round(value * 1000) #improved in v1.1.1 to return int using python's round
+            return round(value * int(1e9)) #improved in v1.1.1 to return int using python's round
 
     def getAddressAndValue(self, timer):
         """
