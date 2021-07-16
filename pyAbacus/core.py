@@ -953,8 +953,13 @@ class SettingsBase(object):
                 value, SLEEP_MAXIMUM_VALUE, SLEEP_STEP_VALUE)
                 raise(InvalidValueError(txt))
 
-        elif "coincidence_window" in setting:
-            if not self.valueCheck(value, COINCIDENCE_WINDOW_MINIMUM_VALUE, \
+        elif "coincidence_window" in setting: 
+            if COINCIDENCE_WINDOW_MINIMUM_VALUE == 1 and value >= 10 and value % 2 != 0:
+            # 15-07-2021 For increasing values starting at 10, the steps should be even for devices
+            #            with 1ns resolution. Therefore, odd values shouldn't be allowed.
+                txt = "Trying to set odd value for coincidence window (ns) in a range with even steps that starts with even number"
+                raise(InvalidValueError(txt))
+            elif not self.valueCheck(value, COINCIDENCE_WINDOW_MINIMUM_VALUE, \
                 COINCIDENCE_WINDOW_MAXIMUM_VALUE, COINCIDENCE_WINDOW_STEP_VALUE):
                 txt = " (%d <= %d coincidence window (ns) <= %d) with steps of: %d"%(COINCIDENCE_WINDOW_MINIMUM_VALUE, \
                 value, COINCIDENCE_WINDOW_MAXIMUM_VALUE, COINCIDENCE_WINDOW_STEP_VALUE)
