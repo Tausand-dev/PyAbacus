@@ -16,14 +16,19 @@ from .constants import DELAY_MINIMUM_VALUE, DELAY_MAXIMUM_VALUE, DELAY_STEP_VALU
 from .constants import SLEEP_MINIMUM_VALUE, SLEEP_MAXIMUM_VALUE, SLEEP_STEP_VALUE
 from .constants import COINCIDENCE_WINDOW_MINIMUM_VALUE, COINCIDENCE_WINDOW_MAXIMUM_VALUE, COINCIDENCE_WINDOW_STEP_VALUE
 
+from .constants import status_message
+
 from .exceptions import *
 import pyAbacus.constants
+
+open_file = open # This line is necesary to deal with files because the python built-in open() is reimplemented in this module
 
 def open(abacus_port):
     """
         Opens a session to a Tausand Abacus device
     """
     global ABACUS_SERIALS, ADDRESS_DIRECTORIES, DEVICES
+
     if abacus_port in ABACUS_SERIALS.keys():
         close(abacus_port)
     serial = AbacusSerial(DEVICES[abacus_port])
@@ -49,7 +54,7 @@ def open(abacus_port):
     elif "AB15" in name:
         setConstantsByResolution(2) #resolution = 2ns; update constants
     elif "AB10" in name:
-        setConstantsByResolution(5) #resolution = 5ns; update constants        
+        setConstantsByResolution(5) #resolution = 5ns; update constants   
 
 def close(abacus_port):
     """
@@ -159,7 +164,8 @@ def dataStreamToDataArrays(input_string, chunck_size = 3):
         |   -  Use chunck_size=5 for devices with inner 32-bit registers e.g. Tausand Abacus AB1004, where byte streams are: {address,MSB,2nd-MSB,2nd-LSB,LSB}.
 
     Returns:
-        Two lists of integer values: addresses, data.
+        Two lists of integer values: addresses, data
+        A boolean value that is False if incoming data is corrupt and True otherwise
 
     Raises:
         AbacusError: Input string is not valid chunck size must either be 3 or 5.
@@ -167,24 +173,29 @@ def dataStreamToDataArrays(input_string, chunck_size = 3):
     """
     input_string, n = input_string
     test = sum(input_string[2:]) & 0xFF # 8 bit
-    if test != 0xFF:
-        raise(CheckSumError())
-    # if test == 0xFF:
-    chuncks = input_string[2 : -1] # (addr & MSB & LSB)^n
-    if chunck_size == 3:
-        chuncks = [chuncks[i:i + 3] for i in range(0, n-3, 3)]
-        addresses = [chunck[0] for chunck in chuncks]
-        data = [(chunck[1] << 8) | (chunck[2]) for chunck in chuncks]
-    elif chunck_size == 5:
-        chuncks = [chuncks[i:i + 5] for i in range(0, n-5, 5)]
-        addresses = [chunck[0] for chunck in chuncks]
-        data = [(chunck[1] << 8 * 3) | (chunck[2] << 8 * 2) | (chunck[3] << 8 * 1) | (chunck[4]) for chunck in chuncks]
+    
+    addresses = []
+    data = []
+    valid_data = False
+
+    if test == 0xFF:
+        chuncks = input_string[2 : -1] # (addr & MSB & LSB)^n
+        if chunck_size == 3:
+            chuncks = [chuncks[i:i + 3] for i in range(0, n-3, 3)]
+            addresses = [chunck[0] for chunck in chuncks]
+            data = [(chunck[1] << 8) | (chunck[2]) for chunck in chuncks]
+        elif chunck_size == 5:
+            chuncks = [chuncks[i:i + 5] for i in range(0, n-5, 5)]
+            addresses = [chunck[0] for chunck in chuncks]
+            data = [(chunck[1] << 8 * 3) | (chunck[2] << 8 * 2) | (chunck[3] << 8 * 1) | (chunck[4]) for chunck in chuncks]
+        else:
+            raise(AbacusError("Input string is not valid chunck size must either be 3 or 5."))
+        valid_data = True
     else:
-        raise(AbacusError("Input string is not valid chunck size must either be 3 or 5."))
-    return addresses, data
-    # else:
-    #     if pyAbacus.constants.DEBUG: print("CheckSumError")
-    #     return [], []
+        if pyAbacus.constants.DEBUG: print("CheckSumError")
+        valid_data = False
+
+    return addresses, data, valid_data
 
 def dataArraysToCounters(abacus_port, addresses, data):
     """Saves in local memory the values of device's counters.
@@ -250,25 +261,87 @@ def getAllCounters(abacus_port):
 
     """
     global COUNTERS_VALUES
+    
     n = ABACUS_SERIALS[abacus_port].getNChannels()
     counters = COUNTERS_VALUES[abacus_port]
     if n == 2:
-        writeSerial(abacus_port, READ_VALUE, 24, 6)
-        data = readSerial(abacus_port)
-        array, datas = dataStreamToDataArrays(data)
+        array, datas = __tryReadingDataFromDevice(abacus_port, 24, 6)  
         dataArraysToCounters(abacus_port, array, datas)
     else:
         multiple_a = []
         multiple_d = []
         addresses_and_nchannels = [(0, 4), (9, 3), (18, 2), (27, 0), (96, 0)]
         for info in addresses_and_nchannels:
-            writeSerial(abacus_port, READ_VALUE, *info)
-            data = readSerial(abacus_port)
-            array, datas = dataStreamToDataArrays(data, chunck_size = 5)
+            array, datas = __tryReadingDataFromDevice(abacus_port, *info, chunck_size = 5)
             multiple_a += array
             multiple_d += datas
         dataArraysToCounters(abacus_port, multiple_a, multiple_d)
     return COUNTERS_VALUES[abacus_port], getCountersID(abacus_port)
+
+def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3, max_tries = 50):
+    """ Attempts to read a data stream at least once. If the data stream is corrupt, tries to read a total of max_tries.
+
+    Args:
+        abacus_port: device port.
+
+    Returns:
+        Two lists of integer values: array, data
+
+    Raises:
+        BaseError after max_tries attempts to communicate have been tried
+
+    """
+    # max_tries must be a positive integer
+
+    global status_message
+
+    max_tries = int(max_tries)
+    if max_tries < 1:
+        max_tries = 1
+
+    log_file = open_file("log_abacus_issues.txt", "a")
+
+    valid_data = False
+    communication_attemps = 0
+    communication_up = True
+
+    while not valid_data:
+        try:
+            writeSerial(abacus_port, READ_VALUE, address, data_16o32)
+            data = readSerial(abacus_port)
+            array, datas, valid_data = dataStreamToDataArrays(data, chunck_size)
+            communication_attemps += 1
+            max_tries -= 1
+            if not valid_data and (communication_attemps == 4 or communication_attemps % 10 == 0): 
+                log_message = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()) + " Communication did not work after " + str(communication_attemps) + " attempts. Trying to reconnect.\n"
+                log_file.write(log_message)
+            if max_tries == 0: 
+                raise BaseError('Data integrity from device might be compromised.')
+                break
+        except (serial.serialutil.SerialException, KeyError):
+            close(abacus_port)
+            try:
+                open(abacus_port)
+                time_ = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
+                status_message = "Communication with the device had been lost, but was recovered. Check log file for details."
+                print(status_message)
+                log_file.write(time_ + " Communication recovered.\n")
+                communication_up = True
+            except:
+                time_ = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
+                status_message = "Communication with the device was lost at " + time_ + ".\n"
+                if communication_up:
+                    print(status_message)
+                    log_file.write(time_ + " Communication with the device was lost.\n")
+                communication_up = False
+                pass
+    log_file.close()
+
+    return array, datas
+
+def getStatusMessage():
+    global status_message
+    return status_message
 
 def getFollowingCounters(abacus_port, counters):
     """
@@ -283,9 +356,7 @@ def getFollowingCounters(abacus_port, counters):
             multiple_a = []
             multiple_d = []
             for c in counters:
-                writeSerial(abacus_port, READ_VALUE, address[c], 2)
-                data = readSerial(abacus_port)
-                array, datas = dataStreamToDataArrays(data)
+                array, datas = __tryReadingDataFromDevice(abacus_port, address[c], 2)
                 multiple_a += array
                 multiple_d += datas
             dataArraysToCounters(abacus_port, multiple_a, multiple_d)
@@ -296,9 +367,7 @@ def getFollowingCounters(abacus_port, counters):
             multiple_a = []
             multiple_d = []
             for c in counters:
-                writeSerial(abacus_port, READ_VALUE, address[c], 0)
-                data = readSerial(abacus_port)
-                array, datas = dataStreamToDataArrays(data, chunck_size = 5)
+                array, datas = __tryReadingDataFromDevice(abacus_port, address[c], 0, chunck_size = 5)
                 multiple_a += array
                 multiple_d += datas
             dataArraysToCounters(abacus_port, multiple_a, multiple_d)
@@ -329,9 +398,8 @@ def getAllSettings(abacus_port):
     """
     global SETTINGS
     def get(abacus_port, first, last, chunck_size):
-        writeSerial(abacus_port, READ_VALUE, first, last - first + 1)
-        data = readSerial(abacus_port)
-        array, datas = dataStreamToDataArrays(data, chunck_size)
+        _chunck_size = chunck_size
+        array, datas = __tryReadingDataFromDevice(abacus_port, first, last - first + 1, chunck_size = _chunck_size)
         dataArraysToSettings(abacus_port, array, datas)
 
     tp =  type(SETTINGS[abacus_port])
@@ -385,17 +453,15 @@ def getSetting(abacus_port, setting):
     settings = SETTINGS[abacus_port]
     if type(settings) is Settings2Ch:
         addr, val = settings.getAddressAndValue(setting + "_ns")
-        writeSerial(abacus_port, READ_VALUE, addr, 4)
-
+        data_16o32 = 4
     else:
         addr, val = settings.getAddressAndValue(setting)
-        writeSerial(abacus_port, READ_VALUE, addr, 0)
+        data_16o32 = 0
 
-    data = readSerial(abacus_port)
     if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
-        array, datas = dataStreamToDataArrays(data)
+        array, datas = __tryReadingDataFromDevice(abacus_port, addr, data_16o32)
     else:
-        array, datas = dataStreamToDataArrays(data, chunck_size = 5)
+        array, datas = __tryReadingDataFromDevice(abacus_port, addr, data_16o32, chunck_size = 5)
     dataArraysToSettings(abacus_port, array, datas)
 
     return SETTINGS[abacus_port].getSetting(setting)
@@ -436,12 +502,13 @@ def getCountersID(abacus_port):
     """
     global COUNTERS_VALUES, ADDRESS_DIRECTORIES
 
-    writeSerial(abacus_port, READ_VALUE, ADDRESS_DIRECTORIES[abacus_port]["dataID"], 0)
-    data = readSerial(abacus_port)
+    address = ADDRESS_DIRECTORIES[abacus_port]["dataID"]
+    data_16o32 = 0
+
     if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
-        array, datas = dataStreamToDataArrays(data)
+        array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32)
     else:
-        array, datas = dataStreamToDataArrays(data, chunck_size = 5)
+        array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 5)
     if datas:
         COUNTERS_VALUES[abacus_port].setCountersID(datas[0])
     return COUNTERS_VALUES[abacus_port].getCountersID()
@@ -458,12 +525,13 @@ def getTimeLeft(abacus_port):
     """
     global COUNTERS_VALUES, ADDRESS_DIRECTORIES
 
-    writeSerial(abacus_port, READ_VALUE, ADDRESS_DIRECTORIES[abacus_port]["time_left"], 0)
-    data = readSerial(abacus_port)
+    address = ADDRESS_DIRECTORIES[abacus_port]["time_left"]
+    data_16o32 = 0
+
     if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
-        array, datas = dataStreamToDataArrays(data)
+        array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32)
     else:
-        array, datas = dataStreamToDataArrays(data, chunck_size = 5)
+        array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 5)
     COUNTERS_VALUES[abacus_port].setTimeLeft(datas[0])
     return COUNTERS_VALUES[abacus_port].getTimeLeft()
 
