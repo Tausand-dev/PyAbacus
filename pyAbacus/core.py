@@ -21,7 +21,7 @@ from .constants import status_message
 from .exceptions import *
 import pyAbacus.constants
 
-open_file = open # This line is necesary to deal with files because the python built-in open() is reimplemented in this module
+open_file = open # 16-Aug-21: This line is necesary to deal with files because the python built-in open() is reimplemented in this module
 
 def open(abacus_port):
     """
@@ -66,10 +66,11 @@ def close(abacus_port):
             ABACUS_SERIALS[abacus_port].close()
         except Exception as e:
             print(e)
-        del ABACUS_SERIALS[abacus_port]
+        #del ABACUS_SERIALS[abacus_port]
     if abacus_port in ADDRESS_DIRECTORIES.keys():
-        del ADDRESS_DIRECTORIES[abacus_port]
-
+        #del ADDRESS_DIRECTORIES[abacus_port]
+        pass
+        
 def getChannelsFromName(name):
     """Returns the number of input channels by reading the device name.
 
@@ -239,6 +240,8 @@ def getAllCounters(abacus_port):
     """Reads all counters from a Tausand Abacus device.
 
     With a single call, this function reads all the counters within the device, including single-channel counters, 2-fold coincidence counters and multi-fold coincidence counters.
+    If communication with the device is lost and cannot be inmediatly recovered, the function 
+    __tryReadingDataFromDevice() will throw an UnboundLocalError.
 
     Example:
 
@@ -262,74 +265,88 @@ def getAllCounters(abacus_port):
     """
     global COUNTERS_VALUES
     
-    n = ABACUS_SERIALS[abacus_port].getNChannels()
-    counters = COUNTERS_VALUES[abacus_port]
-    if n == 2:
-        array, datas = __tryReadingDataFromDevice(abacus_port, 24, 6)  
-        dataArraysToCounters(abacus_port, array, datas)
-    else:
-        multiple_a = []
-        multiple_d = []
-        addresses_and_nchannels = [(0, 4), (9, 3), (18, 2), (27, 0), (96, 0)]
-        for info in addresses_and_nchannels:
-            array, datas = __tryReadingDataFromDevice(abacus_port, *info, chunck_size = 5)
-            multiple_a += array
-            multiple_d += datas
-        dataArraysToCounters(abacus_port, multiple_a, multiple_d)
+    try:
+        n = ABACUS_SERIALS[abacus_port].getNChannels()
+
+        counters = COUNTERS_VALUES[abacus_port]
+        if n == 2:
+            array, datas = __tryReadingDataFromDevice(abacus_port, 24, 6)  
+            dataArraysToCounters(abacus_port, array, datas)
+        else:
+            multiple_a = []
+            multiple_d = []
+            if n == 4:
+                addresses_and_nchannels = [(0, 4), (9, 3), (18, 2), (27, 0), (96, 0)]
+            elif n == 8:
+                addresses_and_nchannels = [(0, 8), (9, 7), (18, 6), (27, 5), (36, 4), (45, 3), (54, 2), (63, 0), 
+                                            (96, 0), (97, 0), (98, 0), (99, 0), (100, 0), (101, 0), (102, 0), (103, 0)]
+            for info in addresses_and_nchannels:
+                array, datas = __tryReadingDataFromDevice(abacus_port, *info, chunck_size = 5)
+                multiple_a += array
+                multiple_d += datas
+            dataArraysToCounters(abacus_port, multiple_a, multiple_d)
+    except UnboundLocalError as e:
+        print(e, 'Error appeared while executing function getAllCounters. The device might be off or disconnected.')
+    
     return COUNTERS_VALUES[abacus_port], getCountersID(abacus_port)
 
-def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3, max_tries = 50):
-    """ Attempts to read a data stream at least once. If the data stream is corrupt, tries to read a total of max_tries.
+def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3, max_checksum_tries = 50, max_wait_s=1, max_reconnection_tries=1):
+    """ Attempts to read a data stream at least once. If the data stream is corrupt, tries to read a total of max_checksum_tries.
+    Also attempts to reconnect serial communication up to max_reconnection_tries in case the device is unplugged during communication
+    If communication with the device is lost and cannot be inmediatly recovered, this function will throw an UnboundLocalError.
 
     Args:
         abacus_port: device port.
 
     Returns:
-        Two lists of integer values: array, data
-
-    Raises:
-        BaseError after max_tries attempts to communicate have been tried
+        Two lists of integer values: array, data if data reading was succesfull
+        None, None if the maximum reconnection or communication attempts was reached or if a timeout of max_wait was reached
 
     """
-    # max_tries must be a positive integer
-
     global status_message
 
-    max_tries = int(max_tries)
-    if max_tries < 1:
-        max_tries = 1
+    # max_checksum_tries must be a positive integer
+    max_checksum_tries = int(max_checksum_tries)
+    if max_checksum_tries < 1:
+        max_checksum_tries = 1
 
     log_file = open_file("log_abacus_issues.txt", "a")
 
     valid_data = False
-    communication_attemps = 0
+    communication_attempts = 0
     communication_up = True
+    reconnection_attempts = 0
 
     while not valid_data:
         try:
             writeSerial(abacus_port, READ_VALUE, address, data_16o32)
             data = readSerial(abacus_port)
             array, datas, valid_data = dataStreamToDataArrays(data, chunck_size)
-            communication_attemps += 1
-            max_tries -= 1
-            if not valid_data and (communication_attemps == 4 or communication_attemps % 10 == 0): 
-                log_message = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()) + " Communication did not work after " + str(communication_attemps) + " attempts. Trying to reconnect.\n"
-                log_file.write(log_message)
-            if max_tries == 0: 
-                raise BaseError('Data integrity from device might be compromised.')
+            communication_attempts += 1
+            max_checksum_tries -= 1
+            if not valid_data and communication_attempts == 4: 
+                log_message = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()) + " Communication did not work after " + str(communication_attempts) + " attempts. Trying to reconnect.\n"
+                log_file.write(log_message) 
+            if max_checksum_tries == 0: 
+                log_file.write('Data integrity from device might be compromised.')
+                print('Data integrity from device might be compromised.')
                 break
         except (serial.serialutil.SerialException, KeyError):
             close(abacus_port)
             try:
+                if reconnection_attempts == max_reconnection_tries:
+                    print("Maximum reconnection attempts was reached after", reconnection_attempts, "attempts")
+                    break
+                reconnection_attempts += 1
                 open(abacus_port)
-                time_ = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
+                time_ = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                 status_message = "Communication with the device had been lost, but was recovered. Check log file for details."
                 print(status_message)
                 log_file.write(time_ + " Communication recovered.\n")
                 communication_up = True
             except:
-                time_ = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
-                status_message = "Communication with the device was lost at " + time_ + ".\n"
+                time_ = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                status_message = time_ + " Communication with the device is down." 
                 if communication_up:
                     print(status_message)
                     log_file.write(time_ + " Communication with the device was lost.\n")
@@ -343,10 +360,15 @@ def getStatusMessage():
     global status_message
     return status_message
 
+def setStatusMessage(message):
+    global status_message
+    status_message = message
+
 def getFollowingCounters(abacus_port, counters):
     """
     """
     global COUNTERS_VALUES
+    
     if len(counters) > 0:
         n = ABACUS_SERIALS[abacus_port].getNChannels()
         counter = COUNTERS_VALUES[abacus_port]
@@ -371,12 +393,15 @@ def getFollowingCounters(abacus_port, counters):
                 multiple_a += array
                 multiple_d += datas
             dataArraysToCounters(abacus_port, multiple_a, multiple_d)
+
     return COUNTERS_VALUES[abacus_port], getCountersID(abacus_port)
 
 def getAllSettings(abacus_port):
     """Reads all settings from a Tausand Abacus device.
 
     With a single call, this function reads all the settings within the device, including sampling time, coincidence window, delay per channel and sleep time per channel.
+    If communication with the device is lost and cannot be inmediatly recovered, the function 
+    __tryReadingDataFromDevice() will throw an UnboundLocalError.
 
     Example:
         settings = getAllSettings('COM3')
@@ -395,12 +420,18 @@ def getAllSettings(abacus_port):
 
     Returns:
 	Settings2ch, Settings4ch or Settings8ch class object including all setting values as registered within the device.
+
     """
+
     global SETTINGS
     def get(abacus_port, first, last, chunck_size):
-        _chunck_size = chunck_size
-        array, datas = __tryReadingDataFromDevice(abacus_port, first, last - first + 1, chunck_size = _chunck_size)
-        dataArraysToSettings(abacus_port, array, datas)
+        try:
+            _chunck_size = chunck_size
+            array, datas = __tryReadingDataFromDevice(abacus_port, first, last - first + 1, chunck_size = _chunck_size)
+            dataArraysToSettings(abacus_port, array, datas)
+        except UnboundLocalError as e:
+            print(e, 'Error appeared while executing function getAllSettings. The device might be off or disconnected.')
+
 
     tp =  type(SETTINGS[abacus_port])
 
@@ -493,6 +524,9 @@ def getCountersID(abacus_port):
 
     *counters_id* overflows at 1 million, starting over at *counters_id=1*.
 
+    If communication with the device is lost and cannot be inmediatly recovered, the function 
+    __tryReadingDataFromDevice() will throw an UnboundLocalError.
+
     Args:
         abacus_port: device port.
 
@@ -505,16 +539,22 @@ def getCountersID(abacus_port):
     address = ADDRESS_DIRECTORIES[abacus_port]["dataID"]
     data_16o32 = 0
 
-    if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
-        array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32)
-    else:
-        array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 5)
-    if datas:
-        COUNTERS_VALUES[abacus_port].setCountersID(datas[0])
+    try:
+        if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
+            array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32)
+        else:
+            array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 5)
+        if datas:
+            COUNTERS_VALUES[abacus_port].setCountersID(datas[0])
+    except UnboundLocalError as e:
+        print(e, 'Error appeared while executing function getCountersID. The device might be off or disconnected.')
+
     return COUNTERS_VALUES[abacus_port].getCountersID()
 
 def getTimeLeft(abacus_port):
     """Reads the remaining time for the next measurement to be ready, in ms.
+    If communication with the device is lost and cannot be inmediatly recovered, the function 
+    __tryReadingDataFromDevice() will throw an UnboundLocalError.
 
     Args:
         abacus_port: device port
@@ -525,14 +565,18 @@ def getTimeLeft(abacus_port):
     """
     global COUNTERS_VALUES, ADDRESS_DIRECTORIES
 
-    address = ADDRESS_DIRECTORIES[abacus_port]["time_left"]
-    data_16o32 = 0
+    try:
+        address = ADDRESS_DIRECTORIES[abacus_port]["time_left"]
+        data_16o32 = 0
 
-    if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
-        array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32)
-    else:
-        array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 5)
-    COUNTERS_VALUES[abacus_port].setTimeLeft(datas[0])
+        if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
+            array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32)
+        else:
+            array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 5)
+        COUNTERS_VALUES[abacus_port].setTimeLeft(datas[0])
+    except UnboundLocalError as e:
+        print(e, 'Error appeared while executing function getTimeLeft. The device might be off or disconnected.')
+    
     return COUNTERS_VALUES[abacus_port].getTimeLeft()
 
 def setSetting(abacus_port, setting, value):
@@ -554,6 +598,7 @@ def setSetting(abacus_port, setting, value):
     global SETTINGS
     settings = SETTINGS[abacus_port]
     settings.setSetting(setting, value)
+    print('setting', setting, 'value', value)
 
     if type(settings) is Settings2Ch:
         suffix = ["_ns", "_us", "_ms", "_s"]
