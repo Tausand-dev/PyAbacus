@@ -28,6 +28,7 @@ def open(abacus_port):
         Opens a session to a Tausand Abacus device
     """
     global ABACUS_SERIALS, ADDRESS_DIRECTORIES, DEVICES
+    global communication_up
 
     if abacus_port in ABACUS_SERIALS.keys():
         close(abacus_port)
@@ -55,6 +56,8 @@ def open(abacus_port):
         setConstantsByResolution(2) #resolution = 2ns; update constants
     elif "AB10" in name:
         setConstantsByResolution(5) #resolution = 5ns; update constants   
+
+    communication_up = True
 
 def close(abacus_port):
     """
@@ -290,7 +293,7 @@ def getAllCounters(abacus_port):
     
     return COUNTERS_VALUES[abacus_port], getCountersID(abacus_port)
 
-def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3, max_checksum_tries = 50, max_wait_s=1, max_reconnection_tries=1):
+def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3, max_checksum_tries = 5, max_wait_s=1, max_reconnection_tries=1):
     """ Attempts to read a data stream at least once. If the data stream is corrupt, tries to read a total of max_checksum_tries.
     Also attempts to reconnect serial communication up to max_reconnection_tries in case the device is unplugged during communication
     If communication with the device is lost and cannot be inmediatly recovered, this function will throw an UnboundLocalError.
@@ -304,6 +307,7 @@ def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3
 
     """
     global status_message
+    global communication_up
 
     # max_checksum_tries must be a positive integer
     max_checksum_tries = int(max_checksum_tries)
@@ -363,6 +367,10 @@ def getStatusMessage():
 def setStatusMessage(message):
     global status_message
     status_message = message
+
+def getCommunicationStatus():
+    global communication_up
+    return communication_up
 
 def getFollowingCounters(abacus_port, counters):
     """
@@ -598,8 +606,7 @@ def setSetting(abacus_port, setting, value):
     global SETTINGS
     settings = SETTINGS[abacus_port]
     settings.setSetting(setting, value)
-    print('setting', setting, 'value', value)
-
+    
     if type(settings) is Settings2Ch:
         suffix = ["_ns", "_us", "_ms", "_s"]
         for s in suffix:
@@ -865,6 +872,7 @@ def renameDuplicates(old):
             yield x
 
 def customBinaryToLetters(number):
+    if number == 0: return ''
     binary = bin(number)[2:]
     n = len(binary)
     if n < 8: binary = '0' * (8 - n) + binary
@@ -872,6 +880,7 @@ def customBinaryToLetters(number):
     return ''.join(letters)
 
 def customLettersToBinary(letters):
+    if letters == '': return 0
     valid = [chr(i + ord('A')) for i in range(8)]
     numbers = ['1' if valid[i] in letters else '0' for i in range(8)]
     number = int('0b' + ''.join(numbers), base = 2)
