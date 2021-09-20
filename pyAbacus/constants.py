@@ -188,4 +188,6 @@ TEST_ANSWER = "Tausand Abacus"
 DEVICES = {}
 ABACUS_SERIALS = {}
 
+status_message = None
+
 DEBUG = False
