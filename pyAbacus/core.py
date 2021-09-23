@@ -29,24 +29,91 @@ def open(abacus_port):
     """
     global ABACUS_SERIALS, ADDRESS_DIRECTORIES, DEVICES
     global communication_up
+    opened_port = None
 
-    if abacus_port in ABACUS_SERIALS.keys():
-        close(abacus_port)
-    serial = AbacusSerial(DEVICES[abacus_port])
-    ABACUS_SERIALS[abacus_port] = serial
-    n = serial.getNChannels()
-    if n == 2:
-        ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_2CH
-        COUNTERS_VALUES[abacus_port] = CountersValues(2)
-        SETTINGS[abacus_port] = Settings2Ch()
-    elif n == 4:
-        ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_8CH
-        COUNTERS_VALUES[abacus_port] = CountersValues(4)
-        SETTINGS[abacus_port] = Settings4Ch()
-    elif n == 8:
-        ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_8CH
-        COUNTERS_VALUES[abacus_port] = CountersValues(8)
-        SETTINGS[abacus_port] = Settings8Ch()
+    def open_com_port(port, print_on=True):
+        ports = {}
+        keys = []
+        attrs = ["device", "name", "description", "hwid", "vid", "pid",
+              "serial_number", "location", "manufacturer", "product", "interface"]
+
+        if print_on:
+            for attr in attrs:
+                print(attr + ":", eval("port.%s"%attr))
+        
+        try:
+            serial = AbacusSerial(port.device)
+            idn = serial.getIdn()
+            if CURRENT_OS in {"win32","cygwin","msys"}: #modified on v1.1
+                #in windows, COM port serves as unique identifier of device
+                keys = list(renameDuplicates(keys + [idn+" ("+port.device+")"])) #key assignment: 'Tausand Abacus ABxxxx (COMx)'
+            else: #linux
+                #in linux, serial number serves as unique identifier of device
+                if port.serial_number is None: #new on 2021-06-28
+                    #if no serial number exist, assign only by IDN string
+                    keys = list(renameDuplicates(keys + [idn])) #key assignment: 'Tausand Abacus ABxxxx'
+                else:
+                    #if a serial number exist, add it to the description
+                    keys = list(renameDuplicates(keys + [idn+" (S/N:"+port.serial_number+")"])) #key assignment: 'Tausand Abacus ABxxxx (S/N: serial_number)'
+            ports[keys[-1]] = port.device #value assignment: 'COMx' or '/dev/ttyxxx'
+            serial.close()
+        except AbacusError:
+            pass
+        except Exception as e:
+            print(port.device, e)
+        return keys[0]
+
+    if "Abacus" in abacus_port:
+        if abacus_port in ABACUS_SERIALS.keys():
+            close(abacus_port)
+        serial = AbacusSerial(DEVICES[abacus_port])
+        ABACUS_SERIALS[abacus_port] = serial
+        n = serial.getNChannels()
+        if n == 2:
+            ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_2CH
+            COUNTERS_VALUES[abacus_port] = CountersValues(2)
+            SETTINGS[abacus_port] = Settings2Ch()
+        elif n == 4:
+            ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_8CH
+            COUNTERS_VALUES[abacus_port] = CountersValues(4)
+            SETTINGS[abacus_port] = Settings4Ch()
+        elif n == 8:
+            ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_8CH
+            COUNTERS_VALUES[abacus_port] = CountersValues(8)
+            SETTINGS[abacus_port] = Settings8Ch()
+        opened_port = abacus_port
+    else:
+        opened_port_assigned = False
+        ports_objects = list(find_ports.comports())
+        for serial_port in ports_objects:
+            if CURRENT_OS in {"win32","cygwin","msys"}: # For Windows, user could type open("comx") or open("COMx")
+                if abacus_port.upper() == serial_port.device and serial_port.manufacturer == "Arduino LLC":
+                    opened_port = open_com_port(serial_port)
+                    opened_port_assigned = True
+            else: # For Linux and Mac, user should type the exact port name
+                if abacus_port == serial_port.device and serial_port.manufacturer == "Arduino LLC":
+                    opened_port = open_com_port(serial_port)
+                    opened_port_assigned = True
+        if opened_port_assigned:
+            serial = AbacusSerial(abacus_port)
+            ABACUS_SERIALS[opened_port] = serial
+            n = serial.getNChannels()
+            if n == 2:
+                ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_2CH
+                COUNTERS_VALUES[opened_port] = CountersValues(2)
+                SETTINGS[opened_port] = Settings2Ch()
+            elif n == 4:
+                ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_8CH
+                COUNTERS_VALUES[opened_port] = CountersValues(4)
+                SETTINGS[opened_port] = Settings4Ch()
+            elif n == 8:
+                ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_8CH
+                COUNTERS_VALUES[opened_port] = CountersValues(8)
+                SETTINGS[opened_port] = Settings8Ch()
+        else:
+            msg = "The port at" + abacus_port + " could not be oppened. Check your spelling or see if the port is available in your system."
+            print(msg)
+            raise Exception(msg)
 
     #Set constants linked to device resolution. New on v1.1 (2020-04-23)
     name=serial.getIdn()
@@ -58,6 +125,7 @@ def open(abacus_port):
         setConstantsByResolution(5) #resolution = 5ns; update constants   
 
     communication_up = True
+    return opened_port
 
 def close(abacus_port):
     """
