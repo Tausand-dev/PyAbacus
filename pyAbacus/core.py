@@ -24,8 +24,15 @@ import pyAbacus.constants
 open_file = open # 16-Aug-21: This line is necesary to deal with files because the python built-in open() is reimplemented in this module
 
 def open(abacus_port):
-    """
-        Opens a session to a Tausand Abacus device
+    """ Opens a session to a Tausand Abacus device
+        
+        Args:
+            abacus_port: a string that can be either 1) the serial port name ('COMx' in Windows or '/dev/ttyxxxx' in Mac or Linux) or 
+            2) The name and port of a previously recognized device, namely 'Tausand Abacus ABxxxx (COMx)'. For this second option, the function 
+            findDevices() should be called first.
+        Returns:
+            opened_port: a string such as 'Tausand Abacus ABxxxx (COMx)' 
+
     """
     global ABACUS_SERIALS, ADDRESS_DIRECTORIES, DEVICES
     global communication_up
@@ -63,7 +70,7 @@ def open(abacus_port):
             print(port.device, e)
         return keys[0]
 
-    if "Abacus" in abacus_port:
+    if "Abacus".upper() in abacus_port.upper():
         if abacus_port in ABACUS_SERIALS.keys():
             close(abacus_port)
         serial = AbacusSerial(DEVICES[abacus_port])
@@ -87,11 +94,13 @@ def open(abacus_port):
         ports_objects = list(find_ports.comports())
         for serial_port in ports_objects:
             if CURRENT_OS in {"win32","cygwin","msys"}: # For Windows, user could type open("comx") or open("COMx")
-                if abacus_port.upper() == serial_port.device and serial_port.manufacturer == "Arduino LLC":
+                if abacus_port.upper() == serial_port.device and (serial_port.manufacturer == "Microsoft"
+                                                                    or ("Microchip".upper() in serial_port.manufacturer.upper())):
                     opened_port = open_com_port(serial_port)
                     opened_port_assigned = True
             else: # For Linux and Mac, user should type the exact port name
-                if abacus_port == serial_port.device and serial_port.manufacturer == "Arduino LLC":
+                if abacus_port == serial_port.device and (("Arduino".upper() in serial_port.manufacturer.upper())
+                                                            or ("Tausand".upper() in serial_port.manufacturer.upper())):
                     opened_port = open_com_port(serial_port)
                     opened_port_assigned = True
         if opened_port_assigned:
@@ -111,8 +120,10 @@ def open(abacus_port):
                 COUNTERS_VALUES[opened_port] = CountersValues(8)
                 SETTINGS[opened_port] = Settings8Ch()
         else:
-            msg = "The port at" + abacus_port + " could not be oppened. Check your spelling or see if the port is available in your system."
+            msg = "The port at " + abacus_port + " could not be oppened. Check the port's name spelling or see if the port is available in your system."
             print(msg)
+            print("\n---> Available ports:\n", [port.device for port in ports_objects if ("Arduino".upper() in serial_port.manufacturer.upper())
+                        or ("Tausand".upper() in serial_port.manufacturer.upper()) or ("Microchip".upper() in serial_port.manufacturer.upper())], "\n")
             raise Exception(msg)
 
     #Set constants linked to device resolution. New on v1.1 (2020-04-23)
@@ -311,7 +322,7 @@ def getAllCounters(abacus_port):
     """Reads all counters from a Tausand Abacus device.
 
     With a single call, this function reads all the counters within the device, including single-channel counters, 2-fold coincidence counters and multi-fold coincidence counters.
-    If communication with the device is lost and cannot be inmediatly recovered, the function 
+    If communication with the device is lost and cannot be inmediatly recovered, the private function 
     __tryReadingDataFromDevice() will throw an UnboundLocalError.
 
     Example:
@@ -429,14 +440,23 @@ def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3
     return array, datas
 
 def getStatusMessage():
+    """Returns a string with the connection status of the device. This is used by other Tausand software products."""
     global status_message
     return status_message
 
 def setStatusMessage(message):
+    """Sets the connection status of the device. . This is used by other Tausand software products
+       Args:
+            message: A string with a message that might be shown to the user.
+    """
     global status_message
     status_message = message
 
 def getCommunicationStatus():
+    """ Returns the devices communication status
+        Returns:
+            True if the communication was succesfully opened or False if the connection is lost.
+    """
     global communication_up
     return communication_up
 
@@ -476,7 +496,7 @@ def getAllSettings(abacus_port):
     """Reads all settings from a Tausand Abacus device.
 
     With a single call, this function reads all the settings within the device, including sampling time, coincidence window, delay per channel and sleep time per channel.
-    If communication with the device is lost and cannot be inmediatly recovered, the function 
+    If communication with the device is lost and cannot be inmediatly recovered, the private function 
     __tryReadingDataFromDevice() will throw an UnboundLocalError.
 
     Example:
@@ -498,7 +518,6 @@ def getAllSettings(abacus_port):
 	Settings2ch, Settings4ch or Settings8ch class object including all setting values as registered within the device.
 
     """
-
     global SETTINGS
     def get(abacus_port, first, last, chunck_size):
         try:
@@ -600,7 +619,7 @@ def getCountersID(abacus_port):
 
     *counters_id* overflows at 1 million, starting over at *counters_id=1*.
 
-    If communication with the device is lost and cannot be inmediatly recovered, the function 
+    If communication with the device is lost and cannot be inmediatly recovered, the private function 
     __tryReadingDataFromDevice() will throw an UnboundLocalError.
 
     Args:
@@ -629,7 +648,7 @@ def getCountersID(abacus_port):
 
 def getTimeLeft(abacus_port):
     """Reads the remaining time for the next measurement to be ready, in ms.
-    If communication with the device is lost and cannot be inmediatly recovered, the function 
+    If communication with the device is lost and cannot be inmediatly recovered, the private function 
     __tryReadingDataFromDevice() will throw an UnboundLocalError.
 
     Args:
