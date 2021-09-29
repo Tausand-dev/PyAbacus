@@ -440,12 +440,14 @@ def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3
     return array, datas
 
 def getStatusMessage():
-    """Returns a string with the connection status of the device. This is used by other Tausand software products."""
+    """Returns a string with the connection status of the device. This is used by other Tausand software products.
+    """
     global status_message
     return status_message
 
 def setStatusMessage(message):
     """Sets the connection status of the device. . This is used by other Tausand software products
+
        Args:
             message: A string with a message that might be shown to the user.
     """
