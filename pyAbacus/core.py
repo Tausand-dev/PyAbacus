@@ -456,6 +456,7 @@ def setStatusMessage(message):
 
 def getCommunicationStatus():
     """ Returns the devices communication status
+    
         Returns:
             True if the communication was succesfully opened or False if the connection is lost.
     """
