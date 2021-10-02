@@ -13,6 +13,7 @@ my_sampling_time_ms = 1000 #change this parameter to set your sampling time. 100
 #define the desired channels to be read. Some examples:
 channels_to_read_2ch = ['A','B','AB']   #for a 2 channel device
 channels_to_read_4ch = ['A','B','C','AB','AC','custom_c1'] #custom_c1 corresponds to a multi-fold mesurement, to be configured, e.g. 'ABC'
+channels_to_read_8ch = ['A','B','C','AB','AC','custom_c1', 'custom_c3', 'custom_c8'] #custom_cN corresponds to a multi-fold mesurement, to be configured, e.g. 'ABC'
 
 print("******************************")
 print("pyAbacus multiple read example")
@@ -44,7 +45,9 @@ else:
     print("   resolution =",resolution,"ns")
 
     ## select channels_to_read depending on the number of channels of the connected device    
-    if numchannels >= 4:
+    if numchannels == 8:
+    	channels_to_read = channels_to_read_8ch
+    elif numchannels == 4:
         channels_to_read = channels_to_read_4ch
     else:
         channels_to_read = channels_to_read_2ch
@@ -58,11 +61,15 @@ else:
     abacus.setSetting(mydevice,"delay_B", 0)	            #set delay_B=0ns
     abacus.setSetting(mydevice,"sleep_A", 0)	            #set sleep_A=0ns
     abacus.setSetting(mydevice,"sleep_B", 0)	            #set sleep_B=0ns
-    if numchannels >= 4:
+    if numchannels == 4:
         abacus.setSetting(mydevice,"delay_C", 0)	        #set delay_C=0ns
         abacus.setSetting(mydevice,"sleep_C", 0)	        #set sleep_C=0ns
         #configure multi-fold coincidences ('custom_c1'):
         abacus.setSetting(mydevice,"config_custom_c1","ABC")    #must use 3 or 4 letters. Valid options: ABC, ABD, ACD, BCD, ABCD
+    elif numchannels == 8:
+    	abacus.setSetting(mydevice,"config_custom_c1","ADE")	#must use 3 or 4 letters. Valid options: any combination of letters from A to H in alphabetical order 
+    	abacus.setSetting(mydevice,"config_custom_c3","EFH")
+    	abacus.setSetting(mydevice,"config_custom_c8","BEGH")    	    	
 
     #read settings, using pyAbacus getAllSettings function:
     #a retry routine has been implemented, as an example to handle exceptions
