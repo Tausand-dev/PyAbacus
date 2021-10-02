@@ -393,30 +393,31 @@ def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3
     if max_checksum_tries < 1:
         max_checksum_tries = 1
 
-    log_file = open_file("log_abacus_issues.txt", "a")
+    log_file = open_file("log_pyabacus.txt", "a")
 
     valid_data = False
     communication_attempts = 0
-    communication_up = True
     reconnection_attempts = 0
 
     while not valid_data:
-        try:
+        try: 
+        # THIS try block handles checksum errors
             writeSerial(abacus_port, READ_VALUE, address, data_16o32)
             data = readSerial(abacus_port)
             array, datas, valid_data = dataStreamToDataArrays(data, chunck_size)
             communication_attempts += 1
             max_checksum_tries -= 1
             if not valid_data and communication_attempts == 4: 
-                log_message = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()) + " Communication did not work after " + str(communication_attempts) + " attempts. Trying to reconnect.\n"
+                log_message = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime()) + " Checksum did not work after " + str(communication_attempts) + " attempts. Trying to reconnect.\n"
                 log_file.write(log_message) 
             if max_checksum_tries == 0: 
-                log_file.write('Data integrity from device might be compromised.')
+                log_file.write(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + ' Data integrity from device might be compromised.\n')
                 print('Data integrity from device might be compromised.')
                 break
-        except (serial.serialutil.SerialException, KeyError):
+        except (serial.serialutil.SerialException, KeyError): 
+        # THIS except block handles disconnection from device
             close(abacus_port)
-            try:
+            try: 
                 if reconnection_attempts == max_reconnection_tries:
                     print("Maximum reconnection attempts was reached after", reconnection_attempts, "attempts")
                     break
@@ -426,15 +427,14 @@ def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3
                 status_message = "Communication with the device had been lost, but was recovered. Check log file for details."
                 print(status_message)
                 log_file.write(time_ + " Communication recovered.\n")
-                communication_up = True
+                __setCommunicationStatus(True)
             except:
                 time_ = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                 status_message = time_ + " Communication with the device is down." 
                 if communication_up:
                     print(status_message)
                     log_file.write(time_ + " Communication with the device was lost.\n")
-                communication_up = False
-                pass
+                    __setCommunicationStatus(False)
     log_file.close()
 
     return array, datas
@@ -462,6 +462,10 @@ def getCommunicationStatus():
     """
     global communication_up
     return communication_up
+
+def __setCommunicationStatus(status):
+    global communication_up
+    communication_up = status
 
 def getFollowingCounters(abacus_port, counters):
     """
@@ -529,7 +533,6 @@ def getAllSettings(abacus_port):
             dataArraysToSettings(abacus_port, array, datas)
         except UnboundLocalError as e:
             print(e, 'Error appeared while executing function getAllSettings. The device might be off or disconnected.')
-
 
     tp =  type(SETTINGS[abacus_port])
 
