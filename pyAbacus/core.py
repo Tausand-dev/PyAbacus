@@ -372,6 +372,16 @@ def getAllCounters(abacus_port):
     
     return COUNTERS_VALUES[abacus_port], getCountersID(abacus_port)
 
+def setLogfilePath(path):
+    """ Sets the path to save log information"""
+    global logfile_path
+    logfile_path = path
+
+def getLogfilePath():
+    """ Gets the path of log information if it has been set before"""
+    global logfile_path
+    return logfile_path    
+
 def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3, max_checksum_tries = 5, max_wait_s=1, max_reconnection_tries=1):
     """ Attempts to read a data stream at least once. If the data stream is corrupt, tries to read a total of max_checksum_tries.
     Also attempts to reconnect serial communication up to max_reconnection_tries in case the device is unplugged during communication
@@ -393,7 +403,11 @@ def __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 3
     if max_checksum_tries < 1:
         max_checksum_tries = 1
 
-    log_file = open_file("log_pyabacus.txt", "a")
+    try:
+        path = getLogfilePath()
+        log_file = open_file( path + "/log_pyabacus.txt", "a")
+    except:
+        log_file = open_file("log_pyabacus.txt", "a") 
 
     valid_data = False
     communication_attempts = 0
