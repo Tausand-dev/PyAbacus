@@ -12,22 +12,22 @@ class BaseError(Exception):
         return self.message
 
 class CheckSumError(BaseError):
-    """ An error ocurred while doing check sum. """
+    """ An error occurred while doing check sum. """
 
     def __init__(self):
-        super(CheckSumError, self).__init__("An error ocurred while doing check sum.")
+        super(CheckSumError, self).__init__("An error occurred while doing check sum.")
 
 class AbacusError(BaseError):
-    """ An unexpected error ocurred. """
+    """ An unexpected error occurred. """
 
     def __init__(self, message = ""):
-        super(AbacusError, self).__init__("An unexpected error ocurred " + message)
+        super(AbacusError, self).__init__("An unexpected error occurred " + message)
 
 class TimeOutError(BaseError):
-    """ A time out error ocurred """
+    """ A time out error occurred """
 
     def __init__(self, message = ""):
-        super(TimeOutError, self).__init__("A timeout error ocurred " + message)
+        super(TimeOutError, self).__init__("A timeout error occurred " + message)
 
 class InvalidValueError(BaseError):
     """ The selected value is not valid """
