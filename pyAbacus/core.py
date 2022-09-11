@@ -1321,7 +1321,7 @@ class SettingsBase(object):
 
 class Settings48Ch(SettingsBase):
     """
-        4 and 8 channel devices use as time base a second. Nevertheless 2 channel uses ns for all timers with the exception of the sampling time (ms).
+        4 and 8 channel devices use as time base a second. Nevertheless 2 channel of family AB1000 use ns for all timers with the exception of the sampling time (ms).
     """
     def __init__(self):
         super(Settings48Ch, self).__init__()
@@ -1494,7 +1494,7 @@ class Settings2Ch(SettingsBase):
     
 class Settings2ChAB2000(Settings48Ch): #new in v1.2 (2022-09-11)
     """
-        2 channel devices of family AB2000, like 4 and 8 channel devices, use as time base a second. Nevertheless 2 channel uses ns for all timers with the exception of the sampling time (ms).
+        2 channel devices of family AB2000, similar to 4 and 8 channel devices, use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).
     """
     def __init__(self):
         super(Settings2ChAB2000, self).__init__()
@@ -1506,7 +1506,7 @@ class Settings2ChAB2000(Settings48Ch): #new in v1.2 (2022-09-11)
 
 class Settings4Ch(Settings48Ch):
     """
-        4 and 8 channel devices use as time base a second. Nevertheless 2 channel uses ns for all timers with the exception of the sampling time (ms).
+        4 and 8 channel devices use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).
     """
     def __init__(self):
         super(Settings4Ch, self).__init__()
@@ -1518,7 +1518,7 @@ class Settings4Ch(Settings48Ch):
 
 class Settings8Ch(Settings48Ch):
     """
-        4 and 8 channel devices use as time base a second. Nevertheless 2 channel uses ns for all timers with the exception of the sampling time (ms).
+        4 and 8 channel devices use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).
     """
     def __init__(self):
         super(Settings8Ch, self).__init__()
