@@ -52,6 +52,12 @@ python -m pip install -r requirements.txt
 ```
 This will allow you to build the documentation using Sphinx.
 
+### Editing version number
+When a new version is created, the new numbering should be updated in the following files:
+- docs/source/conf.py
+- pyAbacus/\_\_init__.py 
+- setup.cfg
+
 ### Building docs
 Go to the `docs` folder and run
 ```
