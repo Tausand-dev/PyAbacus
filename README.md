@@ -1,6 +1,6 @@
 # pyAbacus
 
-pyAbacus was built to simplify the usage of Tausand Abacus family of coincidence counters, providing a library aimed to interface these devices using Python coding.
+pyAbacus is built to simplify the usage of Tausand Abacus family of coincidence counters, providing a library aimed to interface these devices using Python coding.
 
 Written in Python3, pyAbacus relies on the following modules:
 - pyserial
