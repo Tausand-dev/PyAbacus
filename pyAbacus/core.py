@@ -23,7 +23,7 @@ import pyAbacus.constants
 
 open_file = open # 2021-08-16: This line is necesary to deal with files because the python built-in open() is reimplemented in this module
 
-def open(abacus_port): #updated v1.2 (2022-09-11)
+def open(abacus_port): #updated v1.2 (2022-09-12)
     """ Opens a session to a Tausand Abacus device
         
         Args:
@@ -118,16 +118,16 @@ def open(abacus_port): #updated v1.2 (2022-09-11)
             ABACUS_SERIALS[opened_port] = serial
             n = serial.getNChannels()
             f = serial.getFamily() #v1.2 (2022-09-11)
-            if (n == 2) and (f == "AB1000"): #edited v1.2 (2022-09-11)
+            if (n == 2) and (f == "AB1000"): #edited v1.2 (2022-09-12)
                 #2-channel devices of family AB1000, like AB1002 and AB1502
-                ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_2CH
-                COUNTERS_VALUES[abacus_port] = CountersValues(2)
-                SETTINGS[abacus_port] = Settings2Ch()
-            elif n==2: #v1.2 (2022-09-11)
+                ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_2CH
+                COUNTERS_VALUES[opened_port] = CountersValues(2)
+                SETTINGS[opened_port] = Settings2Ch()
+            elif n==2: #v1.2 (2022-09-12)
                 #2-channel devices not in family AB1000, like AB2002 and AB2502
-                ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_8CH
-                COUNTERS_VALUES[abacus_port] = CountersValues(2)
-                SETTINGS[abacus_port] = Settings2ChAB2000() #new v1.2
+                ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_8CH
+                COUNTERS_VALUES[opened_port] = CountersValues(2,f) #v1.2
+                SETTINGS[opened_port] = Settings2ChAB2000() #new v1.2
             elif n == 4:
                 ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_8CH
                 COUNTERS_VALUES[opened_port] = CountersValues(4)
