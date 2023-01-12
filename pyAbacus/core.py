@@ -578,7 +578,9 @@ def getFollowingCounters(abacus_port, counters):
         n = ABACUS_SERIALS[abacus_port].getNChannels()
         counter = COUNTERS_VALUES[abacus_port]
         address = ADDRESS_DIRECTORIES[abacus_port]
-        if n == 2:
+        f = ABACUS_SERIALS[abacus_port].getFamily() #v1.2 (2023-01-11)
+        if (n == 2) and (f == "AB1000"): #edited v1.2 (2023-01-11)
+            #2-channel devices of family AB1000, like AB1002 and AB1502
             counters = ["counts_%s_LSB"%c for c in counters]
             multiple_a = []
             multiple_d = []
@@ -588,6 +590,8 @@ def getFollowingCounters(abacus_port, counters):
                 multiple_d += datas
             dataArraysToCounters(abacus_port, multiple_a, multiple_d)
         else:
+            #2-channel devices not in family AB1000, like AB2002 and AB2502,
+            #or 4-channel devices, or 8-channel devices
             single_double = ["counts_%s"%c for c in counters if len(c) < 3]
             multiple = ["custom_c%d"%(i + 1) for i in range(len(counters) - len(single_double))]
             counters = single_double + multiple
