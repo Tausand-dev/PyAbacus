@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyAbacus.core &mdash; PyAbacus Documentation 1.2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pyAbacus.exceptions" href="exceptions.html" />
+    <link rel="prev" title="Welcome to PyAbacus’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> PyAbacus Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pyAbacus.core</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">pyAbacus.exceptions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">pyAbacus.constants</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyAbacus Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>pyAbacus.core</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/core.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyAbacus.core">
+<span id="pyabacus-core"></span><h1>pyAbacus.core<a class="headerlink" href="#module-pyAbacus.core" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">AbacusSerial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial" title="Permalink to this definition"></a></dt>
+<dd><p>Builds a serial port from pyserial.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.findIdn">
+<span class="sig-name descname"><span class="pre">findIdn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.findIdn" title="Permalink to this definition"></a></dt>
+<dd><p>Requests the device for its string identificator (IDN) using serial port.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.flush" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.getFamily">
+<span class="sig-name descname"><span class="pre">getFamily</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.getFamily" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the family of the device: “AB1000” or “AB2000”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.getIdn">
+<span class="sig-name descname"><span class="pre">getIdn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.getIdn" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the device string identificator (IDN) from local memory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.getNChannels">
+<span class="sig-name descname"><span class="pre">getNChannels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.getNChannels" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the number of input channels in the device.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.getResolution">
+<span class="sig-name descname"><span class="pre">getResolution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.getResolution" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the resolution of the device, in nanoseconds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.readSerial">
+<span class="sig-name descname"><span class="pre">readSerial</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.readSerial" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.testDevice">
+<span class="sig-name descname"><span class="pre">testDevice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.testDevice" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.AbacusSerial.writeSerial">
+<span class="sig-name descname"><span class="pre">writeSerial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_16o32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.AbacusSerial.writeSerial" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">CountersValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AB1000'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues" title="Permalink to this definition"></a></dt>
+<dd><p>Keeps a set of measurements from counters within a device.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.getCountersID">
+<span class="sig-name descname"><span class="pre">getCountersID</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.getCountersID" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the <em>counters_id</em> (consecutive number of measurements) field from a set of measurements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.getNumericAddresses">
+<span class="sig-name descname"><span class="pre">getNumericAddresses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.getNumericAddresses" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.getTimeLeft">
+<span class="sig-name descname"><span class="pre">getTimeLeft</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.getTimeLeft" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the <em>time_left</em> (time in ms for next measurement to be available) field from a set of measurements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.getValue">
+<span class="sig-name descname"><span class="pre">getValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.getValue" title="Permalink to this definition"></a></dt>
+<dd><p>Gets a value of a single channel.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>mycounters.getValue(‘A’)</p>
+</dd>
+<dt>Args:</dt><dd><p>channel: upper case characters indicating the channel to be read. e.g. ‘A’ for singles in input A, ‘AB’ for coincidences between inputs A and B.</p>
+</dd>
+<dt>Returns:</dt><dd><p>integer value of counts in the selected channel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.getValues">
+<span class="sig-name descname"><span class="pre">getValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.getValues" title="Permalink to this definition"></a></dt>
+<dd><p>Gets an array of values of several channels.</p>
+<dl class="simple">
+<dt>Example:</dt><dd><p>mycounters.getValues({‘A’,’B’,’AB’})</p>
+</dd>
+<dt>Args:</dt><dd><p>channels: list of upper case characters indicating the channel to be read. e.g. ‘A’ for singles in input A, ‘AB’ for coincidences between inputs A and B.</p>
+</dd>
+<dt>Returns:</dt><dd><p>array of integer values of counts in the selected channels</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.getValuesFormatted">
+<span class="sig-name descname"><span class="pre">getValuesFormatted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.getValuesFormatted" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.setCountersID">
+<span class="sig-name descname"><span class="pre">setCountersID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.setCountersID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.setTimeLeft">
+<span class="sig-name descname"><span class="pre">setTimeLeft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.setTimeLeft" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.setValueFromArray">
+<span class="sig-name descname"><span class="pre">setValueFromArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.CountersValues.setValueFromArray" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyAbacus.core.CountersValues.time_left">
+<span class="sig-name descname"><span class="pre">time_left</span></span><a class="headerlink" href="#pyAbacus.core.CountersValues.time_left" title="Permalink to this definition"></a></dt>
+<dd><p>in ms</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings2Ch">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">Settings2Ch</span></span><a class="headerlink" href="#pyAbacus.core.Settings2Ch" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings2Ch.getAddressAndValue">
+<span class="sig-name descname"><span class="pre">getAddressAndValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings2Ch.getAddressAndValue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings2Ch.getSetting">
+<span class="sig-name descname"><span class="pre">getSetting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings2Ch.getSetting" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings2Ch.getSettingStr">
+<span class="sig-name descname"><span class="pre">getSettingStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings2Ch.getSettingStr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings2Ch.setSetting">
+<span class="sig-name descname"><span class="pre">setSetting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setting</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings2Ch.setSetting" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings2ChAB2000">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">Settings2ChAB2000</span></span><a class="headerlink" href="#pyAbacus.core.Settings2ChAB2000" title="Permalink to this definition"></a></dt>
+<dd><p>2 channel devices of family AB2000, similar to 4 and 8 channel devices, use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">Settings48Ch</span></span><a class="headerlink" href="#pyAbacus.core.Settings48Ch" title="Permalink to this definition"></a></dt>
+<dd><p>4 and 8 channel devices use as time base a second. Nevertheless 2 channel of family AB1000 use ns for all timers with the exception of the sampling time (ms).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.exponentRepresentationToValue">
+<span class="sig-name descname"><span class="pre">exponentRepresentationToValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.exponentRepresentationToValue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.exponentsToBits">
+<span class="sig-name descname"><span class="pre">exponentsToBits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.exponentsToBits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.fromBitsToValue">
+<span class="sig-name descname"><span class="pre">fromBitsToValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.fromBitsToValue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.getAddressAndValue">
+<span class="sig-name descname"><span class="pre">getAddressAndValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.getAddressAndValue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.getChannels">
+<span class="sig-name descname"><span class="pre">getChannels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.getChannels" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.getSetting">
+<span class="sig-name descname"><span class="pre">getSetting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.getSetting" title="Permalink to this definition"></a></dt>
+<dd><p>For all timers: returns nanoseconds, for sampling returns ms.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.getSettingStr">
+<span class="sig-name descname"><span class="pre">getSettingStr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.getSettingStr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.initAddreses">
+<span class="sig-name descname"><span class="pre">initAddreses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.initAddreses" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.setSetting">
+<span class="sig-name descname"><span class="pre">setSetting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">setting</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.setSetting" title="Permalink to this definition"></a></dt>
+<dd><p>For all timers: value is in nanoseconds, for sampling in ms.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings48Ch.valueToExponentRepresentation">
+<span class="sig-name descname"><span class="pre">valueToExponentRepresentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Settings48Ch.valueToExponentRepresentation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings4Ch">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">Settings4Ch</span></span><a class="headerlink" href="#pyAbacus.core.Settings4Ch" title="Permalink to this definition"></a></dt>
+<dd><p>4 and 8 channel devices use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyAbacus.core.Settings8Ch">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">Settings8Ch</span></span><a class="headerlink" href="#pyAbacus.core.Settings8Ch" title="Permalink to this definition"></a></dt>
+<dd><p>4 and 8 channel devices use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyAbacus.core.Stream">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">Stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">abacus_port</span></em>, <em class="sig-param"><span class="pre">counters</span></em>, <em class="sig-param"><span class="pre">output_function=&lt;built-in</span> <span class="pre">function</span> <span class="pre">print&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Stream" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Stream.setCounters">
+<span class="sig-name descname"><span class="pre">setCounters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">counters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Stream.setCounters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Stream.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Stream.start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyAbacus.core.Stream.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.Stream.stop" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.close">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.close" title="Permalink to this definition"></a></dt>
+<dd><p>Closes a Tausand Abacus device session</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.dataArraysToCounters">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">dataArraysToCounters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addresses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.dataArraysToCounters" title="Permalink to this definition"></a></dt>
+<dd><p>Saves in local memory the values of device’s counters.</p>
+<dl>
+<dt>Args:</dt><dd><p>abacus_port: device port.</p>
+<p>addresses: list of integers with device’s register addresses.</p>
+<p>data: list of integers with device’s register values.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List of counter values as registered within the device.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.dataArraysToSettings">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">dataArraysToSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addresses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.dataArraysToSettings" title="Permalink to this definition"></a></dt>
+<dd><p>Saves in local memory the values of device’s settings.</p>
+<dl>
+<dt>Args:</dt><dd><p>abacus_port: device port.</p>
+<p>addresses: list of integers with device’s register addresses.</p>
+<p>data: list of integers with device’s register values.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List of settings as registered within the device.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.dataStreamToDataArrays">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">dataStreamToDataArrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunck_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.dataStreamToDataArrays" title="Permalink to this definition"></a></dt>
+<dd><p>Builds data from string read on serial port.</p>
+<dl>
+<dt>Args:</dt><dd><p>input_string: stream of bytes to convert. Should have the appropriate format, as given by a Tausand Abacus device.</p>
+<div class="line-block">
+<div class="line">chunck_size : integer, number of bytes per single data row.</div>
+<div class="line-block">
+<div class="line">-  Use chunck_size=3 for devices with inner 16-bit registers e.g. Tausand Abacus AB1002, where byte streams are: {address,MSB,LSB}.</div>
+<div class="line">-  Use chunck_size=5 for devices with inner 32-bit registers e.g. Tausand Abacus AB1004, where byte streams are: {address,MSB,2nd-MSB,2nd-LSB,LSB}.</div>
+</div>
+</div>
+</dd>
+<dt>Returns:</dt><dd><p>Two lists of integer values: addresses, data
+A boolean value that is False if incoming data is corrupt and True otherwise</p>
+</dd>
+<dt>Raises:</dt><dd><p>AbacusError: Input string is not valid chunck size must either be 3 or 5.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.findDevices">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">findDevices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">print_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.findDevices" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of connected and available devices that match with a Tausand Abacus.</p>
+<p>Scans all serial ports, and asks each of them their descriptions. When a device responds with a valid string, e.g. “Tausand Abacus AB1002”, the port is inlcuded in the final answer. The constant DEVICES is updated with the dictionary of valid devices.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>print_on: bool When True, prints devices information.</p>
+</dd>
+<dt>Returns:</dt><dd><p>ports, len(ports)
+List of valid ports, and its length.
+ports is a dictionary where the keys are the identifier strings of the devices (e.g. “Tausand Abacus AB1004”), and the values are the corresponding pyserial port (e.g. ‘COM8’, or ‘/dev/ttyACM0’).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getAllCounters">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getAllCounters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getAllCounters" title="Permalink to this definition"></a></dt>
+<dd><p>Reads all counters from a Tausand Abacus device.</p>
+<p>With a single call, this function reads all the counters within the device, including single-channel counters, 2-fold coincidence counters and multi-fold coincidence counters.
+If communication with the device is lost and cannot be inmediatly recovered, the private function 
+__tryReadingDataFromDevice() will throw an UnboundLocalError.</p>
+<p>Example:</p>
+<blockquote>
+<div><p>counters, counters_id = getAllCounters(‘COM3’)</p>
+<p>Reads data from the device in port ‘COM3’, and might return for example,</p>
+<div class="line-block">
+<div class="line">counters = COUNTERS VALUES: 37</div>
+<div class="line-block">
+<div class="line">A: 1023</div>
+<div class="line">B: 1038</div>
+<div class="line">AB: 201</div>
+</div>
+</div>
+<p>meaning that this is the 37th measurement made by the device, and the measurements were 1023 counts in A, 1038 counts in B, and 201 coincidences between A and B.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Args:</dt><dd><p>abacus_port: device port.</p>
+</dd>
+<dt>Returns:</dt><dd><p>CountersValues class object including counter values as registered within the device, and the sequential number of the reading.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getAllSettings">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getAllSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getAllSettings" title="Permalink to this definition"></a></dt>
+<dd><p>Reads all settings from a Tausand Abacus device.</p>
+<p>With a single call, this function reads all the settings within the device, including sampling time, coincidence window, delay per channel and sleep time per channel.
+If communication with the device is lost and cannot be inmediatly recovered, the private function 
+__tryReadingDataFromDevice() will throw an UnboundLocalError.</p>
+<dl>
+<dt>Example:</dt><dd><p>settings = getAllSettings(‘COM3’)</p>
+<p>Reads settings from the device in port ‘COM3’, and might return for example,</p>
+<div class="line-block">
+<div class="line">delay_A (ns): 0</div>
+<div class="line">delay_B (ns): 20</div>
+<div class="line">sleep_A (ns): 0</div>
+<div class="line">sleep_B (ns): 0</div>
+<div class="line">coincidence_window (ns): 10</div>
+<div class="line">sampling (ms): 1300</div>
+</div>
+</dd>
+<dt>Args:</dt><dd><p>abacus_port: device port.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Settings2ch, Settings2chAB2000, Settings4ch or Settings8ch class object including all setting values as registered within the device.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getChannelsFromName">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getChannelsFromName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getChannelsFromName" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of input channels by reading the device name.</p>
+<p>For example, if name=”Tausand Abacus AB1004”, returns 4.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>name: idn string of the device.</p>
+</dd>
+<dt>Returns:</dt><dd><p>integer, number of input channels in device.</p>
+</dd>
+<dt>Raises:</dt><dd><p>AbacusError: Not a valid abacus.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getCommunicationStatus">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getCommunicationStatus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getCommunicationStatus" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the devices communication status</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>True if the communication was succesfully opened or False if the connection is lost.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getCountersID">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getCountersID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getCountersID" title="Permalink to this definition"></a></dt>
+<dd><p>Reads the <em>counters_id</em> (consecutive number of measurements) in a Tausand Abacus.</p>
+<p>When a new configuration is set, <em>counters_id=0</em>, indicating no valid data is available.</p>
+<p>Each time a new set of valid measurements is available, <em>counters_id</em> increments 1 unit.</p>
+<p><em>counters_id</em> overflows at 1 million, starting over at <em>counters_id=1</em>.</p>
+<p>If communication with the device is lost and cannot be inmediatly recovered, the private function 
+__tryReadingDataFromDevice() will throw an UnboundLocalError.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>abacus_port: device port.</p>
+</dd>
+<dt>Returns:</dt><dd><p>integer, <em>counters_id</em> value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getFamilyFromName">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getFamilyFromName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getFamilyFromName" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the family number by reading the device name.</p>
+<p>For example, if name=”Tausand Abacus AB1004”, returns AB1000.
+For example, if name=”Tausand Abacus AB2502”, returns AB2000.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>name: idn string of the device.</p>
+</dd>
+<dt>Returns:</dt><dd><p>string, family name of device (AB1000, AB2000).</p>
+</dd>
+<dt>Raises:</dt><dd><p>AbacusError: Not a valid abacus.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getFollowingCounters">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getFollowingCounters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getFollowingCounters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getIdn">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getIdn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getIdn" title="Permalink to this definition"></a></dt>
+<dd><p>Reads the identifier string model (IDN) from a Tausand Abacus.</p>
+<dl>
+<dt>Example:</dt><dd><p>myidn = getIdn(‘COM3’)</p>
+<div class="line-block">
+<div class="line">might return </div>
+<div class="line-block">
+<div class="line">myidn = “Tausand Abacus AB1002”</div>
+</div>
+</div>
+</dd>
+<dt>Args:</dt><dd><p>abacus_port: device port.</p>
+</dd>
+<dt>Returns:</dt><dd><p>IDN string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getLogfilePath">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getLogfilePath</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getLogfilePath" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the path of log information if it has been set before</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getPhysicalPort">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getPhysicalPort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getPhysicalPort" title="Permalink to this definition"></a></dt>
+<dd><p>Reads the physical port at the specified serial port.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getResolutionFromName">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getResolutionFromName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getResolutionFromName" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the device resolution, in nanoseconds, by reading the device name.</p>
+<p>For example, if name=”Tausand Abacus AB1004”, a 5ns device, returns 5.
+For example, if name=”Tausand Abacus AB1504”, a 2ns device, returns 2.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>name: idn string of the device.</p>
+</dd>
+<dt>Returns:</dt><dd><p>integer, number of input channels in device.</p>
+</dd>
+<dt>Raises:</dt><dd><p>AbacusError: Not a valid abacus.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getSetting">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getSetting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setting</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getSetting" title="Permalink to this definition"></a></dt>
+<dd><p>Get a single configuration setting within a Tausand Abacus.</p>
+<dl>
+<dt>Args:</dt><dd><p>abacus_port: device port</p>
+<p>setting: name of the setting to be written. Valid strings are: “sampling”, “coincidence_window”, “delay_N”, “sleep_N”, where “N” refers to a channel (A,B,C,D,…).</p>
+</dd>
+<dt>Returns:</dt><dd><p>value for the setting. For “sampling”, value in ms; for other settings, value in ns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getStatusMessage">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getStatusMessage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getStatusMessage" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a string with the connection status of the device. This is used by other Tausand software products.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.getTimeLeft">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">getTimeLeft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.getTimeLeft" title="Permalink to this definition"></a></dt>
+<dd><p>Reads the remaining time for the next measurement to be ready, in ms.
+If communication with the device is lost and cannot be inmediatly recovered, the private function 
+__tryReadingDataFromDevice() will throw an UnboundLocalError.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>abacus_port: device port</p>
+</dd>
+<dt>Returns:</dt><dd><p>integer, in ms, of time left for next measurement.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.open">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.open" title="Permalink to this definition"></a></dt>
+<dd><p>Opens a session to a Tausand Abacus device</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>abacus_port: a string that can be either 1) the serial port name (‘COMx’ in Windows or ‘/dev/ttyxxxx’ in Mac or Linux) or 
+2) The name and port of a previously recognized device, namely ‘Tausand Abacus ABxxxx (COMx)’. For this second option, the function 
+findDevices() should be called first.</p>
+</dd>
+<dt>Returns:</dt><dd><p>opened_port: a string such as ‘Tausand Abacus ABxxxx (COMx)’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.readSerial">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">readSerial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.readSerial" title="Permalink to this definition"></a></dt>
+<dd><p>Reads bytes available at the specified serial port.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.renameDuplicates">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">renameDuplicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.renameDuplicates" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.setAllSettings">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">setAllSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_settings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.setAllSettings" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.setLogfilePath">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">setLogfilePath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.setLogfilePath" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the path to save log information</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.setSetting">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">setSetting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setting</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.setSetting" title="Permalink to this definition"></a></dt>
+<dd><p>Sets a configuration setting within a Tausand Abacus.</p>
+<dl>
+<dt>Example:</dt><dd><p>setSetting(‘COM3’ , ‘sampling’ , 1300)</p>
+<p>sets the sampling time to 1300 ms to a device in port ‘COM3’.</p>
+</dd>
+<dt>Args:</dt><dd><p>abacus_port: device port</p>
+<p>setting: name of the setting to be written. Valid strings are: “sampling”, “coincidence_window”, “delay_N”, “sleep_N”, where “N” refers to a channel (A,B,C,D,…).</p>
+<p>value: new value for the setting. For “sampling”, value in ms; for other settings, value in ns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.setStatusMessage">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">setStatusMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.setStatusMessage" title="Permalink to this definition"></a></dt>
+<dd><p>Sets the connection status of the device. . This is used by other Tausand software products</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>message: A string with a message that might be shown to the user.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.waitAndGetValues">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">waitAndGetValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_try</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_wait_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.waitAndGetValues" title="Permalink to this definition"></a></dt>
+<dd><p>Waits and reads a new set of valid data from a Tausand Abacus.</p>
+<dl>
+<dt>Example:</dt><dd><p>counters, counter_id = waitAndGetValues(‘COM3’,{‘A’,’B’,’AC’})</p>
+<p>Waits for a new set of valid data to be available, related to the sampling time of the device.
+Then, reads the values of counts in A, B and the coincidences of AC, of the device connected in port COM3.
+Returns the requested counters within an array, for example
+| counters = [1023,1038,201]
+| counter_id = 37
+meaning that this is the 37th measurement made by the device, and the measurements were 1023 counts in A, 1038 counts in B, and 201 coincidences between A and C.</p>
+</dd>
+<dt>Args:</dt><dd><p>abacus_port: device port</p>
+<p>channels: list of upper case characters indicating the channel to be read. e.g. ‘A’ for singles in input A, ‘AB’ for coincidences between inputs A and B.</p>
+<p>print_on: bool When True, prints information of the waiting process</p>
+<p>max_try: positive integer number, indicating the maximum trials to recover a communication issue</p>
+<p>max_wait_s: timeout maximum number of seconds to wait. Once this time is reached, the function ends.</p>
+</dd>
+<dt>Returns:</dt><dd><p>counters, counters_id</p>
+<p>Set of read data, and their corresponding ID</p>
+<p>counters: array of integer values of counts in the selected channels</p>
+<p>counters_id: ID (consecutive number of measurements) field from a set of measurements.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.waitForAcquisitionComplete">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">waitForAcquisitionComplete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_try</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_wait_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.waitForAcquisitionComplete" title="Permalink to this definition"></a></dt>
+<dd><p>Waits for a new set of valid data to be available within a Tausand Abacus.</p>
+<dl>
+<dt>Args:</dt><dd><p>abacus_port: device port</p>
+<p>print_on: bool When True, prints information of the waiting process</p>
+<p>max_try: positive integer number, indicating the maximum trials to recover a communication issue</p>
+<p>max_wait_s: timeout maximum number of seconds to wait. Once this time is reached, the function ends.</p>
+</dd>
+<dt>Returns:</dt><dd><p>0  if wait has suceeded.        
+-1 if timeout has been reached.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyAbacus.core.writeSerial">
+<span class="sig-prename descclassname"><span class="pre">pyAbacus.core.</span></span><span class="sig-name descname"><span class="pre">writeSerial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abacus_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_16o32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyAbacus.core.writeSerial" title="Permalink to this definition"></a></dt>
+<dd><p>Low level function. Writes in the specified serial port an instruction built based on command, memory address and data.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to PyAbacus’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="exceptions.html" class="btn btn-neutral float-right" title="pyAbacus.exceptions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tausand Electronics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

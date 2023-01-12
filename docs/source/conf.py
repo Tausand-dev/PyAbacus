@@ -18,11 +18,11 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'PyAbacus Documentation'
-copyright = '2021, Tausand Electronics'
+copyright = '2022, Tausand Electronics'
 author = 'Tausand Electronics'
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.1'
+release = '1.2.0'
 
 
 # -- General configuration ---------------------------------------------------

@@ -1,10 +1,22 @@
 # pyAbacus
 
-pyAbacus was built to simplify the usage of Tausand Abacus family of coincidence counters, providing a library aimed to interface these devices using Python coding.
+pyAbacus is built to simplify the usage of Tausand Abacus family of coincidence counters, providing a library aimed to interface these devices using Python coding.
 
 Written in Python3, pyAbacus relies on the following modules:
 - pyserial
 
+Library version:       1.2.0<br/>
+Original release date: 12/28/2017 (mm/dd/yyyy)<br/>
+Current release date:  01/12/2023<br/>
+Supported models:      AB1002, AB1004, AB1502, AB1504, AB2502, AB2504.
+
+## About Tausand Abacus AB1000
+
+This is a family of coincidence counters, ideal to measure temporal correlations in particle detection and quantum optics experiments.
+
+To learn more about them, visit our website www.tausand.com
+
+To obtain a Tausand's Abacus coincidence counter, visit our [online shop](http://www.tausand.com/shop) or contact us at sales@tausand.com
 
 ## Installation
 `pyAbacus` can be installed using `pip` as: 
@@ -51,6 +63,12 @@ After the virtual environment has been activated, install required packages by u
 python -m pip install -r requirements.txt
 ```
 This will allow you to build the documentation using Sphinx.
+
+### Editing version number
+When a new version is created, the new numbering should be updated in the following files:
+- docs/source/conf.py
+- pyAbacus/\_\_init__.py 
+- setup.cfg
 
 ### Building docs
 Go to the `docs` folder and run

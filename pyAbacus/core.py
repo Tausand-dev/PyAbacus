@@ -21,9 +21,9 @@ from .constants import status_message
 from .exceptions import *
 import pyAbacus.constants
 
-open_file = open # 16-Aug-21: This line is necesary to deal with files because the python built-in open() is reimplemented in this module
+open_file = open # 2021-08-16: This line is necesary to deal with files because the python built-in open() is reimplemented in this module
 
-def open(abacus_port):
+def open(abacus_port): #updated v1.2 (2022-09-12)
     """ Opens a session to a Tausand Abacus device
         
         Args:
@@ -76,15 +76,25 @@ def open(abacus_port):
         serial = AbacusSerial(DEVICES[abacus_port])
         ABACUS_SERIALS[abacus_port] = serial
         n = serial.getNChannels()
-        if n == 2:
+        f = serial.getFamily() #v1.2 (2022-09-11)
+
+        if (n == 2) and (f == "AB1000"): #edited v1.2 (2022-09-11)
+            #2-channel devices of family AB1000, like AB1002 and AB1502
             ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_2CH
             COUNTERS_VALUES[abacus_port] = CountersValues(2)
             SETTINGS[abacus_port] = Settings2Ch()
+        elif n==2: #v1.2 (2022-09-11)
+            #2-channel devices not in family AB1000, like AB2002 and AB2502
+            ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_8CH
+            COUNTERS_VALUES[abacus_port] = CountersValues(2,f) #v1.2
+            SETTINGS[abacus_port] = Settings2ChAB2000() #new v1.2
         elif n == 4:
+            ## 4-channel devices
             ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_8CH
             COUNTERS_VALUES[abacus_port] = CountersValues(4)
             SETTINGS[abacus_port] = Settings4Ch()
         elif n == 8:
+            ## 8-channel devices
             ADDRESS_DIRECTORIES[abacus_port] = ADDRESS_DIRECTORY_8CH
             COUNTERS_VALUES[abacus_port] = CountersValues(8)
             SETTINGS[abacus_port] = Settings8Ch()
@@ -107,10 +117,17 @@ def open(abacus_port):
             serial = AbacusSerial(abacus_port)
             ABACUS_SERIALS[opened_port] = serial
             n = serial.getNChannels()
-            if n == 2:
+            f = serial.getFamily() #v1.2 (2022-09-11)
+            if (n == 2) and (f == "AB1000"): #edited v1.2 (2022-09-12)
+                #2-channel devices of family AB1000, like AB1002 and AB1502
                 ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_2CH
                 COUNTERS_VALUES[opened_port] = CountersValues(2)
                 SETTINGS[opened_port] = Settings2Ch()
+            elif n==2: #v1.2 (2022-09-12)
+                #2-channel devices not in family AB1000, like AB2002 and AB2502
+                ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_8CH
+                COUNTERS_VALUES[opened_port] = CountersValues(2,f) #v1.2
+                SETTINGS[opened_port] = Settings2ChAB2000() #new v1.2
             elif n == 4:
                 ADDRESS_DIRECTORIES[opened_port] = ADDRESS_DIRECTORY_8CH
                 COUNTERS_VALUES[opened_port] = CountersValues(4)
@@ -125,15 +142,26 @@ def open(abacus_port):
             print("\n---> Available ports:\n", [port.device for port in ports_objects if ("Arduino".upper() in serial_port.manufacturer.upper())
                         or ("Tausand".upper() in serial_port.manufacturer.upper()) or ("Microchip".upper() in serial_port.manufacturer.upper())], "\n")
             raise Exception(msg)
-
+    
+    #Set constants linked to device resolution. #v1.2 (2022-09-11)
+    resolution = serial.getResolution()
+    setConstantsByResolution(resolution)
+    
     #Set constants linked to device resolution. New on v1.1 (2020-04-23)
-    name=serial.getIdn()
-    if "AB19" in name:
-        setConstantsByResolution(1) #resolution = 1ns; update constants
-    elif "AB15" in name:
-        setConstantsByResolution(2) #resolution = 2ns; update constants
-    elif "AB10" in name:
-        setConstantsByResolution(5) #resolution = 5ns; update constants   
+    # name = serial.getIdn()
+    # if "AB19" in name:
+    #     setConstantsByResolution(1) #resolution = 1ns; update constants
+    # elif "AB15" in name:
+    #     setConstantsByResolution(2) #resolution = 2ns; update constants
+    # elif "AB10" in name:
+    #     setConstantsByResolution(5) #resolution = 5ns; update constants   
+    # #AB2000 devices. New on v1.2 (2022-07-24)
+    # elif "AB29" in name:
+    #     setConstantsByResolution(1) #resolution = 1ns; update constants
+    # elif "AB25" in name:
+    #     setConstantsByResolution(2) #resolution = 2ns; update constants
+    # elif "AB20" in name:
+    #     setConstantsByResolution(5) #resolution = 5ns; update constants           
 
     communication_up = True
     return opened_port
@@ -189,6 +217,50 @@ def getChannelsFromName(name):
         return 4
     elif "AB1908" in name:
         return 8
+    #new devices AB2xxx. New on v1.2 (2022-07-24)
+    elif "AB2002" in name:
+        return 2
+    elif "AB2004" in name:
+        return 4
+    elif "AB2008" in name:
+        return 8
+    elif "AB2502" in name:
+        return 2
+    elif "AB2504" in name:
+        return 4
+    elif "AB2508" in name:
+        return 8
+    elif "AB2902" in name:
+        return 2
+    elif "AB2904" in name:
+        return 4
+    elif "AB2908" in name:
+        return 8    
+    else:
+        raise(AbacusError("Not a valid abacus."))
+
+def getFamilyFromName(name): #v1.2 (2022-09-11)
+    """Returns the family number by reading the device name.
+
+    For example, if name="Tausand Abacus AB1004", returns AB1000.
+    For example, if name="Tausand Abacus AB2502", returns AB2000.
+    
+    Args:
+        name: idn string of the device.
+
+    Returns:
+        string, family name of device (AB1000, AB2000).
+        
+    Raises:
+        AbacusError: Not a valid abacus.
+        
+    """
+    if pyAbacus.constants.DEBUG:
+        print("Looking for family in name: "+name)
+    if "AB1" in name:
+        return "AB1000"
+    elif "AB2" in name:
+        return "AB2000"
     else:
         raise(AbacusError("Not a valid abacus."))
 
@@ -215,6 +287,13 @@ def getResolutionFromName(name): #new on v1.1 (2020-06-20)
     elif "AB15" in name:  #AB1502, AB1504, AB1508
         return 2
     elif "AB19" in name:  #AB1902, AB1904, AB1908
+        return 1
+    #AB2xx devices. New in v1.2 (2022-07-24)
+    elif "AB20" in name:  #AB2002, AB2004, AB2008.
+        return 5
+    elif "AB25" in name:  #AB2502, AB2504, AB2508.
+        return 2
+    elif "AB29" in name:  #AB2902, AB2904, AB2908.
         return 1
     else:
         raise(AbacusError("Not a valid abacus."))
@@ -318,7 +397,7 @@ def dataArraysToSettings(abacus_port, addresses, data):
         SETTINGS[abacus_port].setValueFromArray(addresses[i], data[i])
     return SETTINGS[abacus_port]
 
-def getAllCounters(abacus_port):
+def getAllCounters(abacus_port): #updated v1.2 (2022-09-11)
     """Reads all counters from a Tausand Abacus device.
 
     With a single call, this function reads all the counters within the device, including single-channel counters, 2-fold coincidence counters and multi-fold coincidence counters.
@@ -349,17 +428,26 @@ def getAllCounters(abacus_port):
     
     try:
         n = ABACUS_SERIALS[abacus_port].getNChannels()
+        f = ABACUS_SERIALS[abacus_port].getFamily() #v1.2 (2022-09-11)
 
         counters = COUNTERS_VALUES[abacus_port]
-        if n == 2:
+        
+        if (n == 2) and (f == "AB1000"): #edited v1.2 (2022-09-11)
+            #2-channel devices of family AB1000
             array, datas = __tryReadingDataFromDevice(abacus_port, 24, 6)  
             dataArraysToCounters(abacus_port, array, datas)
         else:
             multiple_a = []
             multiple_d = []
-            if n == 4:
-                addresses_and_nchannels = [(0, 4), (9, 3), (18, 2), (27, 0), (96, 0)]
+            ## TO DO: improve read in AB2000 family devices with new reading modes.
+            if n == 2: #v1.2 (2022-09-11)
+                #2-channel devices not in family AB1000, like AB2002 or AB2502
+                addresses_and_nchannels = [(0, 2), (9, 1)] # Counters: (A,AB), (B)
+            elif n == 4:
+                #4-channel devices
+                addresses_and_nchannels = [(0, 4), (9, 3), (18, 2), (27, 0), (96, 0)] #Counters: (A,AB,AC,AD), (B,BC,BD), (C,CD), (D), (multi_1)
             elif n == 8:
+                #8-channel devices
                 addresses_and_nchannels = [(0, 8), (9, 7), (18, 6), (27, 5), (36, 4), (45, 3), (54, 2), (63, 0), 
                                             (96, 0), (97, 0), (98, 0), (99, 0), (100, 0), (101, 0), (102, 0), (103, 0)]
             for info in addresses_and_nchannels:
@@ -490,7 +578,9 @@ def getFollowingCounters(abacus_port, counters):
         n = ABACUS_SERIALS[abacus_port].getNChannels()
         counter = COUNTERS_VALUES[abacus_port]
         address = ADDRESS_DIRECTORIES[abacus_port]
-        if n == 2:
+        f = ABACUS_SERIALS[abacus_port].getFamily() #v1.2 (2023-01-11)
+        if (n == 2) and (f == "AB1000"): #edited v1.2 (2023-01-11)
+            #2-channel devices of family AB1000, like AB1002 and AB1502
             counters = ["counts_%s_LSB"%c for c in counters]
             multiple_a = []
             multiple_d = []
@@ -500,6 +590,8 @@ def getFollowingCounters(abacus_port, counters):
                 multiple_d += datas
             dataArraysToCounters(abacus_port, multiple_a, multiple_d)
         else:
+            #2-channel devices not in family AB1000, like AB2002 and AB2502,
+            #or 4-channel devices, or 8-channel devices
             single_double = ["counts_%s"%c for c in counters if len(c) < 3]
             multiple = ["custom_c%d"%(i + 1) for i in range(len(counters) - len(single_double))]
             counters = single_double + multiple
@@ -513,7 +605,7 @@ def getFollowingCounters(abacus_port, counters):
 
     return COUNTERS_VALUES[abacus_port], getCountersID(abacus_port)
 
-def getAllSettings(abacus_port):
+def getAllSettings(abacus_port): #updated v1.2 (2022-09-11)
     """Reads all settings from a Tausand Abacus device.
 
     With a single call, this function reads all the settings within the device, including sampling time, coincidence window, delay per channel and sleep time per channel.
@@ -536,7 +628,7 @@ def getAllSettings(abacus_port):
         abacus_port: device port.
 
     Returns:
-	Settings2ch, Settings4ch or Settings8ch class object including all setting values as registered within the device.
+	Settings2ch, Settings2chAB2000, Settings4ch or Settings8ch class object including all setting values as registered within the device.
 
     """
     global SETTINGS
@@ -554,6 +646,16 @@ def getAllSettings(abacus_port):
         first = ADDRESS_DIRECTORY_2CH["delay_A_ns"]
         last = ADDRESS_DIRECTORY_2CH["coincidence_window_s"]
         get(abacus_port, first, last, 3)
+    elif tp is Settings2ChAB2000: #new v1.2 (2022-09-11)
+        first = ADDRESS_DIRECTORY_8CH["delay_A"]
+        last = ADDRESS_DIRECTORY_8CH["delay_B"]
+        get(abacus_port, first, last, 5)
+        first = ADDRESS_DIRECTORY_8CH["sleep_A"]
+        last = ADDRESS_DIRECTORY_8CH["sleep_B"]
+        get(abacus_port, first, last, 5)
+        first = ADDRESS_DIRECTORY_8CH["sampling"]
+        last = ADDRESS_DIRECTORY_8CH["coincidence_window"]
+        get(abacus_port, first, last, 5)
     elif tp is Settings4Ch:
         first = ADDRESS_DIRECTORY_8CH["delay_A"]
         last = ADDRESS_DIRECTORY_8CH["delay_D"]
@@ -582,7 +684,7 @@ def getAllSettings(abacus_port):
 
     return SETTINGS[abacus_port]
 
-def getSetting(abacus_port, setting):
+def getSetting(abacus_port, setting): #updated v1.2 (2022-09-11)
     """Get a single configuration setting within a Tausand Abacus.
 
     Args:
@@ -604,7 +706,8 @@ def getSetting(abacus_port, setting):
         addr, val = settings.getAddressAndValue(setting)
         data_16o32 = 0
 
-    if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
+    if (ABACUS_SERIALS[abacus_port].getNChannels() == 2) and (ABACUS_SERIALS[abacus_port].getFamily() == "AB1000"): #updated v1.2 (2022-09-11)
+        #2-channel device of AB1000 family, like AB1002 or AB1502
         array, datas = __tryReadingDataFromDevice(abacus_port, addr, data_16o32)
     else:
         array, datas = __tryReadingDataFromDevice(abacus_port, addr, data_16o32, chunck_size = 5)
@@ -630,7 +733,7 @@ def getIdn(abacus_port):
     global ABACUS_SERIALS
     return ABACUS_SERIALS[abacus_port].getIdn()
 
-def getCountersID(abacus_port):
+def getCountersID(abacus_port): #updated v1.2 (2022-09-11)
     """Reads the *counters_id* (consecutive number of measurements) in a Tausand Abacus.
 
     When a new configuration is set, *counters_id=0*, indicating no valid data is available.
@@ -655,7 +758,8 @@ def getCountersID(abacus_port):
     data_16o32 = 0
 
     try:
-        if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
+        if (ABACUS_SERIALS[abacus_port].getNChannels() == 2) and (ABACUS_SERIALS[abacus_port].getFamily() == "AB1000"): #updated v1.2 (2022-09-11)
+            #2-channel device of AB1000 family, like AB1002 or AB1502
             array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32)
         else:
             array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 5)
@@ -666,7 +770,7 @@ def getCountersID(abacus_port):
 
     return COUNTERS_VALUES[abacus_port].getCountersID()
 
-def getTimeLeft(abacus_port):
+def getTimeLeft(abacus_port): #updated v1.2 (2022-09-11)
     """Reads the remaining time for the next measurement to be ready, in ms.
     If communication with the device is lost and cannot be inmediatly recovered, the private function 
     __tryReadingDataFromDevice() will throw an UnboundLocalError.
@@ -684,7 +788,8 @@ def getTimeLeft(abacus_port):
         address = ADDRESS_DIRECTORIES[abacus_port]["time_left"]
         data_16o32 = 0
 
-        if ABACUS_SERIALS[abacus_port].getNChannels() == 2:
+        if (ABACUS_SERIALS[abacus_port].getNChannels() == 2) and (ABACUS_SERIALS[abacus_port].getFamily() == "AB1000"): #updated v1.2 (2022-09-11)
+            #2-channel device of AB1000 family, like AB1002 or AB1502            
             array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32)
         else:
             array, datas = __tryReadingDataFromDevice(abacus_port, address, data_16o32, chunck_size = 5)
@@ -1015,10 +1120,10 @@ def setConstantsByResolution(resolution_ns): #new on v1.1 (2020-04-23)
         print("  DELAY_STEP_VALUE:",DELAY_STEP_VALUE)
         print("  SLEEP_STEP_VALUE:",SLEEP_STEP_VALUE)
 
-class CountersValues(object):
+class CountersValues(object): #updated v1.2 (2022-09-11)
     """Keeps a set of measurements from counters within a device.
     """
-    def __init__(self, n_channels):
+    def __init__(self, n_channels, family="AB1000"): #v1.2, new optional parameter 'family'
         if not n_channels in [2, 4, 8]:
             raise(BaseError("%d is not a valid number of channels (2, 4, 8)."%n_channels))
         letters = [chr(ord('A') + i) for i in range(n_channels)]
@@ -1030,8 +1135,10 @@ class CountersValues(object):
 
         self.n_channels = n_channels
         self.channels_letters = channels
-
-        if n_channels == 2:
+        self.family = family #v1.2
+        
+        if (n_channels == 2) and (family == "AB1000"): #edited v1.2 (2022-09-11)
+            #2-channel device of family AB1000, like AB1002 or AB1502
             for c in channels:
                 setattr(self, "%s_LSB"%c, 0)
                 setattr(self, "%s_MSB"%c, 0)
@@ -1041,7 +1148,8 @@ class CountersValues(object):
 
         self.addresses = {}
 
-        if n_channels == 2:
+        if (n_channels == 2) and (family == "AB1000"): #edited v1.2 (2022-09-11)
+            #2-channel device of family AB1000, like AB1002 or AB1502
             directory = ADDRESS_DIRECTORY_2CH
         else:
             directory = ADDRESS_DIRECTORY_8CH
@@ -1049,7 +1157,8 @@ class CountersValues(object):
         for key in list(directory.keys()):
             for c in channels:
                 txt = "counts_%s"%c
-                if n_channels == 2:
+                if (n_channels == 2) and (family == "AB1000"): #edited v1.2 (2022-09-11)
+                    #2-channel device of family AB1000, like AB1002 or AB1502
                     if ("%s_LSB"%txt == key) or ("%s_MSB"%txt == key): pass
                     else: continue
                 else:
@@ -1059,14 +1168,15 @@ class CountersValues(object):
 
         self.numeric_addresses = self.addresses.copy()
 
-        if n_channels == 2:
+        if (n_channels == 2) and (family == "AB1000"): #edited v1.2 (2022-09-11)
             self.addresses[30] = 'dataID'
             self.addresses[31] = 'time_left'
 
         else:
             self.addresses[83] = 'dataID'
             self.addresses[84] = 'time_left'
-            self.addresses[96] = 'custom_c1'
+            if n_channels > 2:
+                self.addresses[96] = 'custom_c1'
             if n_channels > 4:
                 self.addresses[83] = 'dataID'
                 self.addresses[84] = 'time_left'
@@ -1086,7 +1196,7 @@ class CountersValues(object):
         """
         setattr(self, self.addresses[address], value)
 
-    def getValue(self, channel):
+    def getValue(self, channel): #updated v1.2 (2022-09-11)
         """Gets a value of a single channel.
 
         Example:
@@ -1098,7 +1208,7 @@ class CountersValues(object):
         Returns:
             integer value of counts in the selected channel
         """
-        if self.n_channels == 2:
+        if (self.n_channels == 2) and (self.family == "AB1000"): #updated v1.2
             msb = getattr(self, "%s_MSB" % channel) << 16
             lsb = getattr(self, "%s_LSB" % channel)
 
@@ -1215,7 +1325,7 @@ class SettingsBase(object):
 
 class Settings48Ch(SettingsBase):
     """
-        4 and 8 channel devices use as time base a second. Nevertheless 2 channel uses ns for all timers with the exception of the sampling time (ms).
+        4 and 8 channel devices use as time base a second. Nevertheless 2 channel of family AB1000 use ns for all timers with the exception of the sampling time (ms).
     """
     def __init__(self):
         super(Settings48Ch, self).__init__()
@@ -1385,10 +1495,22 @@ class Settings2Ch(SettingsBase):
         unit = "ns"
         if timer == "sampling": unit = "ms"
         return "%s (%s): %d"%(timer, unit, value)
+    
+class Settings2ChAB2000(Settings48Ch): #new in v1.2 (2022-09-11)
+    """
+        2 channel devices of family AB2000, similar to 4 and 8 channel devices, use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).
+    """
+    def __init__(self):
+        super(Settings2ChAB2000, self).__init__()
+        self.channels = ['delay_A', 'delay_B',
+                        'sleep_A', 'sleep_B',
+                        'coincidence_window', 'sampling']
+
+        self.initAddreses()    
 
 class Settings4Ch(Settings48Ch):
     """
-        4 and 8 channel devices use as time base a second. Nevertheless 2 channel uses ns for all timers with the exception of the sampling time (ms).
+        4 and 8 channel devices use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).
     """
     def __init__(self):
         super(Settings4Ch, self).__init__()
@@ -1400,7 +1522,7 @@ class Settings4Ch(Settings48Ch):
 
 class Settings8Ch(Settings48Ch):
     """
-        4 and 8 channel devices use as time base a second. Nevertheless 2 channel uses ns for all timers with the exception of the sampling time (ms).
+        4 and 8 channel devices use as time base a second. On the other hand, 2 channel devices of family AB1000 use ns for all timers with the exception of the sampling time (ms).
     """
     def __init__(self):
         super(Settings8Ch, self).__init__()
@@ -1415,7 +1537,7 @@ class Settings8Ch(Settings48Ch):
 
         self.initAddreses()
 
-class AbacusSerial(serial.Serial):
+class AbacusSerial(serial.Serial): #updated v1.2 (2022-09-11)
     """
         Builds a serial port from pyserial.
     """
@@ -1425,9 +1547,13 @@ class AbacusSerial(serial.Serial):
         self.flush()
         if self.testDevice():
             self.n_channels = getChannelsFromName(self.getIdn())
+            self.resolution = getResolutionFromName(self.getIdn()) #v1.2 (2022-09-11)
+            self.family = getFamilyFromName(self.getIdn()) #v1.2 (2022-09-11)
             if pyAbacus.constants.DEBUG:
                 print(port, "answered: %s"%self.getIdn())
                 print(port, "number of channels: %d"%self.n_channels)
+                print(port, "resolution in nanoseconds: %d"%self.resolution)
+                print(port, "family of device: %s"%self.family) #v1.2 (2022-09-11)
         else:
             if pyAbacus.constants.DEBUG:
                 print(port, "answered: %s"%self.getIdn())
@@ -1445,8 +1571,11 @@ class AbacusSerial(serial.Serial):
         Requests the device for its string identificator (IDN) using serial port.
         """
         self.write(TEST_MESSAGE)
-        self.idn = self.read(21).decode()
-        time.sleep(1)
+        self.idn = self.read(21).decode() #21 chars in string "Tausand Abacus AB1234"
+        time.sleep(0.5)
+        
+        self.flush() #v1.2 (2022-09-11). After waiting, clear serial port. Required to flush extra chars '\n x"00"..x"00"' in AB2000 devices.
+        
         return self.idn
 
     def getIdn(self):
@@ -1462,10 +1591,11 @@ class AbacusSerial(serial.Serial):
         if TEST_ANSWER in ans: return True
         return False
 
-    def writeSerial(self, command, address, data_16o32):
+    def writeSerial(self, command, address, data_16o32): #updated v1.2 (2022-09-11)
         """
         """
-        if self.n_channels == 2:
+        if (self.n_channels == 2) and (self.family == "AB1000"): #edited v1.2 (2022-09-11)
+            #special case: devices in AB1000 family with 2 channels: AB1002, AB1502.
             msb = (data_16o32 >> 8) & 0xFF
             lsb = data_16o32 & 0xFF
             message = [START_COMMUNICATION, command, address, msb, lsb, END_COMMUNICATION]
@@ -1476,17 +1606,29 @@ class AbacusSerial(serial.Serial):
             print('writeSerial:', message)
         self.write(message)
 
-    def readSerial(self):
+    def readSerial(self): #updated v1.2 (2022-09-11)
         """
         """
         try:
-            if self.read()[0] == 0x7E:
+            #v1.2, updated method to read
+            first_read = self.read_until(b'\x7E') #reads until 0x7E arrives
+            if first_read[-1] == 0x7E: #if the last read byte was x"7E"
                 numbytes = self.read()[0]
                 bytes_read = list(self.read(numbytes))
                 checksum = self.read()[0]
                 message = [0x7E, numbytes] +  bytes_read + [checksum], numbytes + 3
                 if pyAbacus.constants.DEBUG: print('readSerial:', message)
                 return message
+            
+            ##before v1.2:
+            # if self.read()[0] == 0x7E:
+            #     numbytes = self.read()[0]
+            #     bytes_read = list(self.read(numbytes))
+            #     checksum = self.read()[0]
+            #     message = [0x7E, numbytes] +  bytes_read + [checksum], numbytes + 3
+            #     if pyAbacus.constants.DEBUG: print('readSerial:', message)
+            #     return message
+            
         except IndexError:
             pass
         if pyAbacus.constants.DEBUG:
@@ -1497,6 +1639,16 @@ class AbacusSerial(serial.Serial):
         """Gets the number of input channels in the device.
         """
         return self.n_channels
+    
+    def getFamily(self): #new in v1.2 (2022-09-11)
+        """Gets the family of the device: "AB1000" or "AB2000".
+        """
+        return self.family
+    
+    def getResolution(self): #new in v1.2 (2022-09-11)
+        """Gets the resolution of the device, in nanoseconds.
+        """
+        return self.resolution
 
 class Stream(object):
     """
