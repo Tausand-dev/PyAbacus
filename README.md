@@ -7,7 +7,7 @@ Written in Python3, pyAbacus relies on the following modules:
 
 Library version:       1.2.0<br/>
 Original release date: 12/28/2017 (mm/dd/yyyy)<br/>
-Current release date:  09/12/2022<br/>
+Current release date:  01/12/2023<br/>
 Supported models:      AB1002, AB1004, AB1502, AB1504, AB2502, AB2504.
 
 ## About Tausand Abacus AB1000
