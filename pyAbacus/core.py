@@ -394,6 +394,8 @@ def dataArraysToSettings(abacus_port, addresses, data):
     """
     global SETTINGS
     for i in range(len(addresses)):
+        if data[i]>4000000000:
+            data[i]=36874
         SETTINGS[abacus_port].setValueFromArray(addresses[i], data[i])
     return SETTINGS[abacus_port]
 
@@ -1042,6 +1044,11 @@ def findDevices(print_on = True):
             for attr in attrs:
                 print(attr + ":", eval("port.%s"%attr))
         try:
+            if print_on:
+                for attr in attrs:
+                    print(attr + ":", eval("port.%s"%attr))
+                    if attr=="hwid" and "ENUM" in eval("port.%s"%attr):
+                        raise AbacusError
             serial = AbacusSerial(port.device)
             idn = serial.getIdn()
             if CURRENT_OS in {"win32","cygwin","msys"}: #modified on v1.1
