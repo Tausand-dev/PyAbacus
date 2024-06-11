@@ -394,9 +394,8 @@ def dataArraysToSettings(abacus_port, addresses, data):
     """
     global SETTINGS
     for i in range(len(addresses)):
-        if data[i]<4000000000:
+        if data[i]<66000:
             #Reemplazar valor 
-            
 
             SETTINGS[abacus_port].setValueFromArray(addresses[i], data[i])
     return SETTINGS[abacus_port]
