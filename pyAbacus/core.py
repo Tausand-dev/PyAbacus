@@ -394,9 +394,8 @@ def dataArraysToSettings(abacus_port, addresses, data):
     """
     global SETTINGS
     for i in range(len(addresses)):
-        if data[i]<66000:
-            #Reemplazar valor 
-
+        if data[i]<65536:
+            #v1.2.1. Only if data[i] is 16-bit, replace value
             SETTINGS[abacus_port].setValueFromArray(addresses[i], data[i])
     return SETTINGS[abacus_port]
 
@@ -1045,7 +1044,8 @@ def findDevices(print_on = True):
             for attr in attrs:
                 print(attr + ":", eval("port.%s"%attr))
         try:
-            if print_on:
+            if print_on: 
+                #v1.2.1. Fix, skip bluetooth devices in port
                 for attr in attrs:
                     print(attr + ":", eval("port.%s"%attr))
                     if attr=="hwid" and "ENUM" in eval("port.%s"%attr):
