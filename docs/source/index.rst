@@ -19,20 +19,12 @@ pyAbacus was built to simplify the usage of Tausand_ Abacus family of coincidenc
 Contents
 -----------------------------------------
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    core
-
-.. toctree::
-  :maxdepth: 2
-
-  exceptions
-
-.. toctree::
-  :maxdepth: 2
-
-  constants
-
+   exceptions
+   constants
+   examples   
 
 Indices and tables
 ==================
