@@ -16,7 +16,7 @@ import pyAbacus as abacus
 from time import time
 import numpy as np
 
-##User inputs
+##User's parameters
 port = 'COM4'    #indicate the port to connect with. E.g.: 'COM4'
 samples = 1000   #how many times the read test should be made
 
