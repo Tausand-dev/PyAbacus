@@ -394,7 +394,9 @@ def dataArraysToSettings(abacus_port, addresses, data):
     """
     global SETTINGS
     for i in range(len(addresses)):
-        SETTINGS[abacus_port].setValueFromArray(addresses[i], data[i])
+        if data[i]<65536:
+            #v1.2.1. Only if data[i] is 16-bit, replace value
+            SETTINGS[abacus_port].setValueFromArray(addresses[i], data[i])
     return SETTINGS[abacus_port]
 
 def getAllCounters(abacus_port): #updated v1.2 (2022-09-11)
@@ -1042,6 +1044,12 @@ def findDevices(print_on = True):
             for attr in attrs:
                 print(attr + ":", eval("port.%s"%attr))
         try:
+            if print_on: 
+                #v1.2.1. Fix, skip bluetooth devices in port
+                for attr in attrs:
+                    print(attr + ":", eval("port.%s"%attr))
+                    if attr=="hwid" and "ENUM" in eval("port.%s"%attr):
+                        raise AbacusError
             serial = AbacusSerial(port.device)
             idn = serial.getIdn()
             if CURRENT_OS in {"win32","cygwin","msys"}: #modified on v1.1

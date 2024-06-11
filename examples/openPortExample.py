@@ -1,7 +1,7 @@
 """openPortExample
     
     Show how to start communication with a Tausand Abacus devices using two simple methods: 1) By specifying the port name a device is plugged into.    2) By finding Tausand Abacus devices that are plugged in and connecting to the first found device
-    Finally, after comminucation is established, the counters values are read read.
+    Finally, after comminucation is established, the counters values are read.
 """
 import pyAbacus as abacus
 
